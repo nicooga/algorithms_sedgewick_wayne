@@ -8,6 +8,4 @@ shift
 java_args=$@
 java_package=algsex/chapter$chapter/section$section/Exercise$exercise
 
-compile
-
-java -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args
+compile && java -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args
