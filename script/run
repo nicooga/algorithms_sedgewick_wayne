@@ -2,9 +2,12 @@
 chapter=$1
 section=$2
 exercise=$3
+shift
+shift
+shift
+java_args=$@
+java_package=algsex/chapter$chapter/section$section/Exercise$exercise
 
-shift
-shift
-shift
+compile
 
-java -cp $JAVA_VENDOR:$JAVA_OUTPUT_DIR algsex.chapter$chapter.section$section.Exercise$exercise $@
+java -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args
