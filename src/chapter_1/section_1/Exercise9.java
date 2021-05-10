@@ -7,6 +7,7 @@ public class Exercise9 {
   public static void main(String[] args) {
     int x = Integer.parseInt(args[0]);
     StdOut.println(toBinaryString(x));
+    StdOut.println(toBinaryString2(x));
   }
 
   private static String toBinaryString(int x) {
@@ -26,6 +27,13 @@ public class Exercise9 {
     }
 
     return result;
+  }
+
+  // This is the version shown in the book. Pretty damn good.
+  private static String toBinaryString2(int N) {
+    String s = "";
+    for (int n = N; n > 0; n /= 2) s = (n % 2) + s;
+    return s;
   }
 
   private static double log2(int x) {
