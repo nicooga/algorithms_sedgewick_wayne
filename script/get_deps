@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
-dep=./deps/algs4.jar
+deps_dir=./deps
+
+if [ ! -d $deps_dir ]; then
+  mkdir $deps_dir
+fi
+
+dep=$deps_dir/algs4.jar
 
 if [ ! -f $dep ]; then
   curl https://algs4.cs.princeton.edu/code/algs4.jar -o $dep
