@@ -1,3 +1,5 @@
+package algsex.chapter1.section1;
+
 public class Exercise2 {
   public static void main(String[] _args) {
     double expressionA = (1 + 2.236) / 2;

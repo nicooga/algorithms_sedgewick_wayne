@@ -1,3 +1,5 @@
+package algsex.chapter1.section1;
+
 public class Exercise1 {
   public static void main(String[] _args) {
     int expressionA = (0 + 15) / 2;
