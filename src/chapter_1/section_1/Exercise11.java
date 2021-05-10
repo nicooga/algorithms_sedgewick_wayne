@@ -7,24 +7,29 @@ public class Exercise11 {
   public static void main(String[] args) {
     int rows = (int) StdRandom.uniform(5, 10);
     int cols = (int) StdRandom.uniform(5, 10);
-    boolean[][] matrix = new boolean[rows][cols];
+    boolean[][] matrix = createRandomMatrix(rows, cols);
     printMatrix(matrix, rows, cols);
   }
 
   private
 
-  static void printMatrix(boolean[][] matrix, int rows, int cols) {
+  static boolean[][] createRandomMatrix(int rows, int cols) {
+    boolean[][] matrix = new boolean[rows][cols];
     fillRandomly(matrix, rows, cols);
-    printHeader(cols);
-
-    for (int row = 0; row < rows; row++)
-      printRow(matrix, row, cols);
+    return matrix;
   }
 
   static void fillRandomly(boolean[][] matrix, int rows, int cols) {
     for (int row = 0; row < rows; row++)
       for (int col = 0; col < cols; col++)
         matrix[row][col] = StdRandom.bernoulli();
+  }
+
+  static void printMatrix(boolean[][] matrix, int rows, int cols) {
+    printHeader(cols);
+
+    for (int row = 0; row < rows; row++)
+      printRow(matrix, row, cols);
   }
 
   static void printHeader(int rows) {
