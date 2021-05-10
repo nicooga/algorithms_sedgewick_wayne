@@ -3,3 +3,4 @@ get_deps
 rm -rf $JAVA_OUTPUT_DIR;
 
 find $JAVA_SRC_DIR -name "*java" | xargs javac -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
+echo "=== Finished compilation ==="
