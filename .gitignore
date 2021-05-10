@@ -1,3 +1,12 @@
+.idea
+
+# Scripting state
+scripts/.state
+scripts/.state/
+
+# Dependencies
+deps/
+
 # Compiled class file
 *.class
 output/

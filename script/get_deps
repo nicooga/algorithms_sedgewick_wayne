@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+dep=./deps/algs4.jar
+
+if [ ! -f $dep ]; then
+  curl https://algs4.cs.princeton.edu/code/algs4.jar -o $dep
+fi
