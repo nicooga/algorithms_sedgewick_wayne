@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+arrow_icon="\xE2\x86\xAA"
+echo -e "$arrow_icon $@"

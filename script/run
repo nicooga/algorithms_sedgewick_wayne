@@ -8,4 +8,10 @@ shift
 java_args=$@
 java_package=algsex/chapter$chapter/section$section/Exercise$exercise
 
-compile && java -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args
+run() {
+  command="java -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
+  prompt "running command \u001b[34m$command\u001b[0m"
+  $command
+}
+
+compile && run

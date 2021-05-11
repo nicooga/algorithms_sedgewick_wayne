@@ -2,5 +2,18 @@
 get_deps
 rm -rf $JAVA_OUTPUT_DIR;
 
-find $JAVA_SRC_DIR -name "*java" | xargs javac -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
-echo "=== Finished compilation ==="
+do_compile() {
+  find $JAVA_SRC_DIR -name "*java" \
+    | xargs javac -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
+}
+
+check_icon="\xE2\x9C\x85"
+error_icon="\xF0\x9F\x92\xA3"
+
+prompt "... compiling"
+
+if do_compile; then
+  prompt "$check_icon Finished Compilation"
+else
+  prompt "$error_icon Compilation failed"
+fi
