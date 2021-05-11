@@ -6,12 +6,47 @@ shift
 shift
 shift
 java_args=$@
-java_package=algsex/chapter$chapter/section$section/Exercise$exercise
+java_package=algsex.chapter$chapter.section$section.Exercise$exercise
 
-run() {
-  command="java -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
-  prompt "running command \u001b[34m$command\u001b[0m"
+RED="\u001b[31m"
+GREEN="\u001b[32m"
+BLUE="\u001b[34m"
+NO_COLOR="\u001b[0m"
+CHECK_ICON="\xE2\x9C\x85"
+ERROR_ICON="\xF0\x9F\x92\xA3"
+
+do_run() {
+  command="java -enableassertions -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
+  prompt "running command $BLUE$command$NO_COLOR:"
+  echo "==="
   $command
+  echo "==="
 }
 
-compile && run
+succeed() {
+  prompt "${GREEN}${CHECK_ICON} run succeeded$NO_COLOR"
+}
+
+fail() {
+  prompt "${RED}${ERROR_ICON} run failed$NO_COLOR"
+  exit 1
+}
+
+echo
+echo "============================================"
+prompt "starting run ..."
+
+if compile; then
+  echo > /dev/null
+else
+  fail
+fi
+
+if do_run; then
+  succeed
+else
+  fail
+fi
+
+echo "============================================"
+echo

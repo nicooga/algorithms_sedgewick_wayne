@@ -2,18 +2,30 @@
 get_deps
 rm -rf $JAVA_OUTPUT_DIR;
 
+RED="\u001b[31m"
+GREEN="\u001b[32m"
+NO_COLOR="\u001b[0m"
+CHECK_ICON="\xE2\x9C\x85"
+ERROR_ICON="\xF0\x9F\x92\xA3"
+
 do_compile() {
   find $JAVA_SRC_DIR -name "*java" \
     | xargs javac -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
 }
 
-check_icon="\xE2\x9C\x85"
-error_icon="\xF0\x9F\x92\xA3"
+succeed() {
+  prompt "$GREEN$CHECK_ICON compiled succesfully$NO_COLOR"
+}
+
+fail() {
+  prompt "$RED$ERROR_ICON compilation failed$NO_COLOR"
+  exit 1
+}
 
 prompt "... compiling"
 
 if do_compile; then
-  prompt "$check_icon Finished Compilation"
+  succeed
 else
-  prompt "$error_icon Compilation failed"
+  fail
 fi
