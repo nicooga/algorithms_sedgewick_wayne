@@ -7,15 +7,6 @@ CHECK_ICON="\xE2\x9C\x85"
 ERROR_ICON="\xF0\x9F\x92\xA3"
 
 main() {
-  chapter=$1
-  section=$2
-  exercise=$3
-  shift
-  shift
-  shift
-  java_args=$@
-  java_package=algsex.chapter$chapter.section$section.Exercise$exercise
-
   echo
   echo "============================================"
   prompt "starting run ..."
@@ -26,7 +17,7 @@ main() {
     fail
   fi
 
-  if do_run $java_package $java_args; then
+  if do_run $@; then
     succeed
   else
     fail
@@ -37,12 +28,17 @@ main() {
 }
 
 do_run() {
-  java_package=$1
+  chapter=$1
+  section=$2
+  exercise=$3
+  shift
+  shift
   shift
   java_args=$@
-
+  java_package=algsex.chapter$chapter.section$section.Exercise$exercise
   command="java -enableassertions -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
-  prompt "running command $BLUE$command$NO_COLOR:"
+
+  prompt "running command $BLUE$command$NO_COLOR"
   echo "==="
   $command
   echo "==="
@@ -50,6 +46,7 @@ do_run() {
 
 succeed() {
   prompt "${GREEN}${CHECK_ICON} run succeeded$NO_COLOR"
+  exit 0
 }
 
 fail() {
