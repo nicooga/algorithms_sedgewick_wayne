@@ -1,14 +1,24 @@
 #!/usr/bin/env bash
-get_deps
-rm -rf $JAVA_OUTPUT_DIR;
-
 RED="\u001b[31m"
 GREEN="\u001b[32m"
 NO_COLOR="\u001b[0m"
 CHECK_ICON="\xE2\x9C\x85"
 ERROR_ICON="\xF0\x9F\x92\xA3"
 
+main() {
+  get_deps
+  rm -rf $JAVA_OUTPUT_DIR;
+  
+  if do_compile; then
+    succeed
+  else
+    fail
+  fi
+}
+
 do_compile() {
+  prompt "... compiling"
+
   find $JAVA_SRC_DIR -name "*java" \
     | xargs javac -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
 }
@@ -22,10 +32,4 @@ fail() {
   exit 1
 }
 
-prompt "... compiling"
-
-if do_compile; then
-  succeed
-else
-  fail
-fi
+main $@

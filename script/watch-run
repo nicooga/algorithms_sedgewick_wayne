@@ -1,12 +1,16 @@
 #!/usr/bin/env bash
-run_command="run $@"
+main() {
+  command="run $@"
+  
+  chapter=$1
+  section=$2
+  exercise=$3
+  
+  $command
+  
+  while inotifywait -q -e close_write ./src/chapter_$chapter/section_$section/Exercise$exercise.java ; do
+    $command
+  done
+}
 
-chapter=$1
-section=$2
-exercise=$3
-
-$run_command
-
-while inotifywait -q -e close_write ./src/chapter_$chapter/section_$section/Exercise$exercise.java ; do
-  $run_command
-done
+main $@
