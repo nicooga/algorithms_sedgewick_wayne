@@ -42,6 +42,7 @@ do_run() {
   echo "==="
   $command
   echo "==="
+  $?
 }
 
 succeed() {
