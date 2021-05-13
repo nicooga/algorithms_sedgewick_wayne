@@ -8,7 +8,7 @@ ERROR_ICON="\xF0\x9F\x92\xA3"
 main() {
   get_deps
   rm -rf $JAVA_OUTPUT_DIR;
-  
+
   if do_compile; then
     succeed
   else
@@ -20,7 +20,7 @@ do_compile() {
   prompt "... compiling"
 
   find $JAVA_SRC_DIR -name "*java" \
-    | xargs javac -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
+    | xargs javac -Xlint:deprecation -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
 }
 
 succeed() {

@@ -41,7 +41,9 @@ do_run() {
   prompt "running command $BLUE$command$NO_COLOR"
   echo "==="
   $command
+  command_result=$?
   echo "==="
+  return $command_result;
 }
 
 succeed() {
