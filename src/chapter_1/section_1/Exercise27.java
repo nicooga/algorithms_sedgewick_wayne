@@ -4,8 +4,6 @@ import java.util.*;
 import edu.princeton.cs.algs4.*;
 
 public class Exercise27 {
-  private static ArrayList<Integer> cache = new ArrayList<>();
-
   public static void main(String[] args) {
     int N = Integer.parseInt(args[0]);
     int k = Integer.parseInt(args[1]);
@@ -17,8 +15,21 @@ public class Exercise27 {
   private
 
   static double binomial(int N, int k, double p) {
-    if ((N == 0) && (k == 0)) return 1.0;
-    if ((N < 0) || (k < 0)) return 0.0;
-    return (1 - p) * binomial(N-1, k, p) + p * binomial(N-1, k-1, p);
+    double[][] cache = new double[N+1][k+1];
+    return binomial(N, k, p, cache);
+  }
+
+  static double binomial(int N, int k, double p, double[][] cache) {
+    if (cache[N][k] == -1) {
+      double result;
+
+      if ((N == 0) && (k == 0)) result = 1.0;
+      if ((N < 0) || (k < 0)) result = 0.0;
+      result = (1 - p) * binomial(N-1, k, p) + p * binomial(N-1, k-1, p);
+
+      cache[N][k] = result;
+    }
+
+    return cache[N][k];
   }
 }
