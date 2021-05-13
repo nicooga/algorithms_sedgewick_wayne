@@ -11,11 +11,7 @@ main() {
   echo "============================================"
   prompt "starting run ..."
 
-  if compile; then
-    echo > /dev/null
-  else
-    fail
-  fi
+  compile || fail
 
   if do_run $@; then
     succeed
@@ -35,8 +31,10 @@ do_run() {
   shift
   shift
   java_args=$@
+
   java_package=algsex.chapter$chapter.section$section.Exercise$exercise
-  command="java -enableassertions -cp $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
+  export TIME="===\n%E elapsed"
+  command="time java -enableassertions --class-path $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
 
   prompt "running command $BLUE$command$NO_COLOR"
   echo "==="
