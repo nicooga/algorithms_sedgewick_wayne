@@ -16,18 +16,19 @@ public class Exercise27 {
 
   static double binomial(int N, int k, double p) {
     double[][] cache = new double[N+1][k+1];
+
+    for (int i = 0; i <= N; i++)
+      Arrays.fill(cache[i], -1.0);
+
     return binomial(N, k, p, cache);
   }
 
   static double binomial(int N, int k, double p, double[][] cache) {
-    if (cache[N][k] == -1) {
-      double result;
+    if ((N == 0) && (k == 0)) return 1.0;
+    if ((N < 0) || (k < 0)) return 0.0;
 
-      if ((N == 0) && (k == 0)) result = 1.0;
-      if ((N < 0) || (k < 0)) result = 0.0;
-      result = (1 - p) * binomial(N-1, k, p) + p * binomial(N-1, k-1, p);
-
-      cache[N][k] = result;
+    if (cache[N][k] == -1.0) {
+      cache[N][k] = (1 - p) * binomial(N-1, k, p, cache) + p * binomial(N-1, k-1, p, cache);;
     }
 
     return cache[N][k];
