@@ -14,7 +14,7 @@ public class Exercise31 {
 
     double[][] points = calculatePoints(N);
 
-    initializeDrawScale();
+    setScale();
     drawCircle();
     drawLines(points, p);
     drawDots(points);
@@ -29,7 +29,7 @@ public class Exercise31 {
   static final double LINE_RADIUS = 0.01;
   static final java.awt.Color LINE_COLOR = StdDraw.GRAY;
 
-  static void initializeDrawScale() {
+  static void setScale() {
     double usedRadius = CIRCLE_RADIUS + DOT_RADIUS + PADDING;
 
     StdDraw.setXscale(-usedRadius, usedRadius);
