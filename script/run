@@ -7,8 +7,8 @@ CHECK_ICON="\xE2\x9C\x85"
 ERROR_ICON="\xF0\x9F\x92\xA3"
 
 main() {
-  echo
-  echo "============================================"
+  prompt -b
+  prompt -b "============================================"
   prompt "starting run ..."
 
   compile || fail
@@ -19,31 +19,32 @@ main() {
     fail
   fi
 
-  echo "============================================"
-  echo
+  prompt -b "============================================"
+  prompt -b
 }
 
 do_run() {
-  chapter=$1
-  section=$2
-  exercise=$3
-  shift
-  shift
+  java_package=$1
   shift
   java_args=$@
-
-  java_package=algsex.chapter$chapter.section$section.Exercise$exercise
+  compile_java_command="java -enableassertions --class-path $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
 
   export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0
-  export TIME="===\n%E elapsed"
 
-  command="time java -enableassertions --class-path $JAVA_DEPS_DIR/*:$JAVA_OUTPUT_DIR $java_package $java_args"
+  if [ $QUIET ]; then
+    unset TIME
+    command="$compile_java_command"
+  else
+    export TIME="===\n%E elapsed"
+    command="time $compile_java_command"
+  fi
 
   prompt "running command $BLUE$command$NO_COLOR"
-  echo "==="
+  prompt -b "==="
   $command
   command_result=$?
-  echo "==="
+  prompt -b "==="
+
   return $command_result;
 }
 

@@ -1,0 +1,14 @@
+main() {
+  chapter=$1
+  section=$2
+  exercise=$3
+  shift
+  shift
+  shift
+  java_args=$@
+  java_package=algsex.chapter$chapter.section$section.Exercise$exercise
+
+  run $java_package $java_args
+}
+
+main $@

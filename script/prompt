@@ -1,3 +1,20 @@
 #!/usr/bin/env bash
-arrow_icon="\xE2\x86\xAA"
-echo -e "$arrow_icon $@"
+if [ $QUIET ]; then
+  exit 0
+fi
+
+if [[ $# -gt 0 ]]; then
+  case $1 in
+    -b|--bare)
+      bare=1
+      shift
+      ;;
+  esac
+fi
+
+if [ $bare ]; then
+  echo $@
+else
+  arrow_icon="\xE2\x86\xAA"
+  echo -e "$arrow_icon $@"
+fi
