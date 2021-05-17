@@ -28,6 +28,14 @@ public class Exercise32 {
     CANVAS_SIZE[0] * GRAPH_SIZE_PERCENTAGE,
     CANVAS_SIZE[1] * GRAPH_SIZE_PERCENTAGE
   };
+  static final double GRAPH_LEFT_X = CANVAS_SIZE[0] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0;
+  static final double GRAPH_RIGHT_X = CANVAS_SIZE[0] - CANVAS_SIZE[0] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0;
+  static final double GRAPH_BOTTOM_Y = CANVAS_SIZE[1] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0;
+  static final double GRAPH_TOP_Y = CANVAS_SIZE[1] * (GRAPH_SIZE_PERCENTAGE + 1) / 2.0;
+  static final Point GRAPH_LEFT_BOTTOM_CORNER = new Point(GRAPH_LEFT_X, GRAPH_BOTTOM_Y);
+  static final Point GRAPH_RIGHT_BOTTOM_CORNER = new Point(GRAPH_RIGHT_X, GRAPH_BOTTOM_Y);
+  static final Point GRAPH_LEFT_TOP_CORNER = new Point(GRAPH_LEFT_X, GRAPH_TOP_Y);
+
   static final double BAR_WIDTH = 20.0;
   static final double BAR_SPACING = 30.0;
   static final double SCALE_MARK_WIDTH = 10.0;
@@ -76,33 +84,21 @@ public class Exercise32 {
   }
 
   static void drawAxes() {
-    double leftX = CANVAS_SIZE[0] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0;
-    double rightX = CANVAS_SIZE[0] - CANVAS_SIZE[0] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0;
-    double bottomY = CANVAS_SIZE[1] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0;
-    double topY = CANVAS_SIZE[1] * (GRAPH_SIZE_PERCENTAGE + 1) / 2.0;
-
-    Point leftBottomCorner = new Point(leftX, bottomY);
-    Point rightBottomCorner = new Point(rightX, bottomY);
-    Point leftTopCorner = new Point(leftX, topY);
-
-    drawLine(leftBottomCorner, rightBottomCorner);
-    drawLine(leftBottomCorner, leftTopCorner);
+    drawLine(GRAPH_LEFT_BOTTOM_CORNER, GRAPH_RIGHT_BOTTOM_CORNER);
+    drawLine(GRAPH_LEFT_BOTTOM_CORNER, GRAPH_LEFT_TOP_CORNER);
   }
 
   static void drawScale() {
     int closestTenMultiple = (int) Math.ceil(maxBucketSize / 10.0) * 10;
     int numberOfMarks = closestTenMultiple / 5;
 
-    double leftX = CANVAS_SIZE[0] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0; // TODO: DRY up
-    double bottomY = CANVAS_SIZE[1] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0; // TODO: DRY up
-
     for (int i = 0; i <= numberOfMarks; i++) {
       int markValue = (closestTenMultiple / numberOfMarks) * i;
 
-      Point markStartPoint = new Point(
-        leftX,
-        bottomY + (GRAPH_SIZE[1] / (double) numberOfMarks) * i
-      );
+      Point markStartPoint =
+        GRAPH_LEFT_BOTTOM_CORNER.translateY(
+          (GRAPH_SIZE[1] / (double) numberOfMarks) * i
+        );
 
       Point markEndPoint = markStartPoint.translateX(-SCALE_MARK_WIDTH);
 
