@@ -66,7 +66,7 @@ public class Exercise32 {
 
     drawAxes();
     drawScale();
-    // drawBars(); // DEBUG
+    drawBars(); // DEBUG
   }
 
   static void setCanvasSizeAndScale() {
@@ -91,19 +91,25 @@ public class Exercise32 {
 
   static void drawScale() {
     int closestTenMultiple = (int) Math.ceil(maxBucketSize / 10.0) * 10;
-    int numberOfMarks = closestTenMultiple / 10;
+    int numberOfMarks = closestTenMultiple / 5;
 
     double leftX = CANVAS_SIZE[0] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0; // TODO: DRY up
     double bottomY = CANVAS_SIZE[1] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0; // TODO: DRY up
 
     for (int i = 0; i <= numberOfMarks; i++) {
+      StdOut.printf("closesTenMultiple: %s, i: %s\n", closestTenMultiple, i);
+
+      String markValue = Integer.toString((closestTenMultiple / numberOfMarks) * i);
+
       Point markStartPoint = new Point(
         leftX,
         bottomY + (GRAPH_SIZE[1] / (double) numberOfMarks) * i
       );
 
       Point markEndPoint = markStartPoint.translateX(-SCALE_MARK_WIDTH);
+
       drawLine(markStartPoint, markEndPoint);
+      drawText(markEndPoint.translateX(-10), markValue);
     }
   }
 
@@ -154,7 +160,10 @@ public class Exercise32 {
   }
 
   static void drawLine(Point pointA, Point pointB) {
-    StdOut.printf("pointA: %s, pointB: %s\n", pointA, pointB);
     StdDraw.line(pointA.getX(), pointA.getY(), pointB.getX(), pointB.getY());
+  }
+
+  static void drawText(Point point, String text) {
+    StdDraw.text(point.getX(), point.getY(), text);
   }
 }
