@@ -97,9 +97,7 @@ public class Exercise32 {
     double bottomY = CANVAS_SIZE[1] * (1 - GRAPH_SIZE_PERCENTAGE) / 2.0; // TODO: DRY up
 
     for (int i = 0; i <= numberOfMarks; i++) {
-      StdOut.printf("closesTenMultiple: %s, i: %s\n", closestTenMultiple, i);
-
-      String markValue = Integer.toString((closestTenMultiple / numberOfMarks) * i);
+      int markValue = (closestTenMultiple / numberOfMarks) * i;
 
       Point markStartPoint = new Point(
         leftX,
@@ -109,7 +107,7 @@ public class Exercise32 {
       Point markEndPoint = markStartPoint.translateX(-SCALE_MARK_WIDTH);
 
       drawLine(markStartPoint, markEndPoint);
-      drawText(markEndPoint.translateX(-10), markValue);
+      drawText(markEndPoint.translateX(-20), Integer.toString(markValue));
     }
   }
 
