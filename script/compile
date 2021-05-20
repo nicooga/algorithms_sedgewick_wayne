@@ -20,7 +20,7 @@ do_compile() {
   prompt "... compiling"
 
   find $JAVA_SRC_DIR -name "*java" \
-    | xargs javac -Xlint:deprecation -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
+    | xargs javac -Xlint:deprecation -Xdiags:verbose -cp deps/algs4.jar -d $JAVA_OUTPUT_DIR
 }
 
 succeed() {
