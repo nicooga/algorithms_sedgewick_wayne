@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+
+main() {
+  chapter=$1
+  section=$2
+  exercise=$3
+  shift
+  shift
+  shift
+
+  exercise_file=./src/chapter_$chapter/section_$section/Exercise$exercise.java
+
+  check_existance $exercise_file
+  generate_exercise_scaffold $exercise_file $chapter $section $exercise
+}
+
+check_existance() {
+  if [[ -f $1 ]]; then
+    while true; do
+      read -p "Exercise file $exercise_file already exists. Overwrite? (y/N)" yn
+      case $yn in
+        [Yy]* ) rm -rf $1; break;;
+        [Nn]* ) exit;;
+        * ) echo "Invalid input: $yn";;
+      esac
+    done
+  fi
+}
+
+generate_exercise_scaffold() {
+  file=$1
+  chapter=$2
+  section=$3
+  exercise=$4
+
+  echo $1
+
+  touch $file
+  tee -a $file << EOF
+package algsex.chapter$chapter.section$section;
+
+import java.util.*;
+import java.lang.*;
+import edu.princeton.cs.algs4.*;
+
+public class Exercise$exercise {
+  public static void main(String[] args) {
+  }
+}
+EOF
+}
+
+main $@
