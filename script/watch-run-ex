@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 main() {
-  command="run $@"
-  
+  command="run-ex $@"
+
   chapter=$1
   section=$2
   exercise=$3
-  
+
   $command
-  
+
   while inotifywait -q -e close_write ./src/chapter_$chapter/section_$section/Exercise$exercise.java ; do
     $command
   done
