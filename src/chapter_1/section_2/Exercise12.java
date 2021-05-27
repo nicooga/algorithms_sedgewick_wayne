@@ -201,7 +201,7 @@ public class Exercise12 {
         case 1, 3, 5, 7, 8, 10, 12:
           return 31;
         case 2:
-          return isLeapYear() ? 29 : 28;
+          return belongsToLeapYear() ? 29 : 28;
         case 4, 6, 9, 11:
           return 30;
         default:
@@ -210,8 +210,16 @@ public class Exercise12 {
       }
     }
 
-    private boolean isLeapYear() {
-      return new IsLeapYearCommand(year).execute();
+    private boolean belongsToLeapYear() {
+      return (
+        isDivisibleBy(year, 100) ?
+        isDivisibleBy(year, 400) :
+        isDivisibleBy(year, 4)
+      );
+    }
+
+    private boolean isDivisibleBy(int dividend, int divisor) {
+      return dividend % divisor == 0;
     }
 
     public static class InvalidDateError extends Exception {
@@ -233,34 +241,19 @@ public class Exercise12 {
 
       private String nameForIndex(int index) {
         switch(index) {
-          case 0: return "Sunday";
-          case 1: return "Monday";
-          case 2: return "Tuesday";
-          case 3: return "Wednesday";
-          case 4: return "Thursday";
-          case 5: return "Friday";
-          case 6: return "Saturday";
+          case 0: return "Saturday";
+          case 1: return "Sunday";
+          case 2: return "Monday";
+          case 3: return "Tuesday";
+          case 4: return "Wednesday";
+          case 5: return "Thursday";
+          case 6: return "Friday";
           default:
             assert false;
             throw new RuntimeException("Bad week day index provided");
         }
       }
     }
-
-    // private static class GetWeekDayIndexGaussVersion {
-    //   private final int[] REGULAR_MONTH_OFFSETS = { 0, 3, 3, 6, 1, 4, 6, 2, 5, 0, 3, 5 };
-    //   private final int[] LEAP_YEAR_MONTH_OFFSETS = { 0, 3, 4, 0, 2, 5, 0, 3, 6, 1, 4, 6};
-
-    //   private SmartDate
-
-    //   public GetWeekDayIndexGaussVersion(SmartDate date) {
-    //     this.date = date;
-    //   }
-
-    //   public int execute() {
-
-    //   }
-    // }
 
     private static class GetWeekDayIndexCommand {
       private SmartDate date;
@@ -270,21 +263,19 @@ public class Exercise12 {
       }
 
       public int execute() {
-        StdOut.println(Math.floor(month()));
-
         return (int) (
           date.day()
-          + Math.floor(2.6 * month() - 0.2)
-          - 2*century()
+          + Math.floor(13*(month()+1)/5)
           + year()
           + Math.floor(year() / 4.0)
           + Math.floor(century() / 4.0)
+          - 2*century()
         ) % 7;
       }
 
       private int month() {
-        if (date.month() < 3) return date.month() + 10;
-        else return date.month() - 2;
+        if (date.month() < 3) return date.month() + 12;
+        else return date.month();
       }
 
       private int century() {
@@ -292,28 +283,7 @@ public class Exercise12 {
       }
 
       private int year() {
-        if (date.month() < 3) return date.year() - 1;
-        else return date.year();
-      }
-    }
-
-    private static class IsLeapYearCommand {
-      private int year;
-
-      public IsLeapYearCommand(int year) {
-        this.year = year;
-      }
-
-      public boolean execute() {
-        return (
-          isDivisibleBy(year, 100) ?
-          isDivisibleBy(year, 400) :
-          isDivisibleBy(year, 4)
-        );
-      }
-
-      private boolean isDivisibleBy(int dividend, int divisor) {
-        return dividend % divisor == 0;
+        return date.year() % 100;
       }
     }
   }
