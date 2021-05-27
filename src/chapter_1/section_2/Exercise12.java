@@ -1,6 +1,7 @@
 package algsex.chapter1.section2;
 
 import java.lang.*;
+import java.time.*;
 import edu.princeton.cs.algs4.*;
 
 public class Exercise12 {
@@ -138,7 +139,41 @@ public class Exercise12 {
       assert false;
     }
 
+    testSmartDateMatchesJavaTimeWeekDay();
+
     StdOut.println("All tests passed");
+  }
+
+  private static void testSmartDateMatchesJavaTimeWeekDay() {
+    for (int year = 2021; year <= 2022; year++)
+      for (int month = 1; month <= 12; month++)
+        testSmartDateMatchesJavaTimeWeekDay(year, month);
+  }
+
+  private static void testSmartDateMatchesJavaTimeWeekDay(int year, int month) {
+    LocalDate firstDayOfMonth = LocalDate.of(year, month, 1);
+    LocalDate lastDayOfMonth = firstDayOfMonth.withDayOfMonth(firstDayOfMonth.lengthOfMonth());
+    testSmartDateMatchesJavaTimeWeekDay(firstDayOfMonth);
+    testSmartDateMatchesJavaTimeWeekDay(lastDayOfMonth);
+  }
+
+  private static void testSmartDateMatchesJavaTimeWeekDay(LocalDate javaDate) {
+    try {
+      SmartDate smartDate = new SmartDate(
+        javaDate.getYear(),
+        javaDate.getMonthValue(),
+        javaDate.getDayOfMonth()
+      );
+
+      String javaDateWeekDay = javaDate.getDayOfWeek().toString();
+      String expectedWeekDay = javaDateWeekDay.charAt(0) + javaDateWeekDay.substring(1, javaDateWeekDay.length()).toLowerCase();
+      String actualWeekDay = smartDate.dayOfTheWeek();
+      String errorMessage = String.format("Expected SmartDate %s to have weekDay %s, but got %s", smartDate, expectedWeekDay, actualWeekDay);
+
+      assert  actualWeekDay.equals(expectedWeekDay) : errorMessage;
+    } catch(SmartDate.InvalidDateError _e) {
+      assert false;
+    }
   }
 
   private static class SmartDate {
@@ -267,9 +302,9 @@ public class Exercise12 {
           date.day()
           + Math.floor(13*(month()+1)/5)
           + year()
-          + Math.floor(year() / 4.0)
-          + Math.floor(century() / 4.0)
-          - 2*century()
+          + Math.floor(year()/4.0)
+          - Math.floor(year()/100)
+          + Math.floor(year()/400)
         ) % 7;
       }
 
@@ -278,12 +313,9 @@ public class Exercise12 {
         else return date.month();
       }
 
-      private int century() {
-        return date.year() / 100;
-      }
-
       private int year() {
-        return date.year() % 100;
+        if (date.month() < 3) return date.year() - 1;
+        else return date.year();
       }
     }
   }
