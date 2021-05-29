@@ -6,13 +6,13 @@ import edu.princeton.cs.algs4.*;
 
 public class Exercise17 {
   public static void main(String[] args) {
-    testEquality();
-    testFractionSimplication();
-    testAddition();
-    testSubtraction();
-    testMultiplication();
-    testDivision();
-    // testOverflowAndUnderflow();
+    // testEquality();
+    // testFractionSimplication();
+    // testAddition();
+    // testSubtraction();
+    // testMultiplication();
+    // testDivision();
+    testOverflowAndUnderflow();
 
     StdOut.println("All tests passed");
   }
@@ -79,10 +79,11 @@ public class Exercise17 {
     assert halfMinMinusOne * 2 > 0; // Assert underflow would happen
 
     try {
-      new Rational(2, halfMaxPlusOne).plus(new Rational(2, 2));
+      new Rational(1, 3).plus(new Rational(1, halfMaxPlusOne));
       assert false;
     } catch (AssertionError e) {
-      String expectedErrorMessage = String.format("Multiplication of %s and 2 would cause overflow", halfMaxPlusOne);
+      String expectedErrorMessage = String.format("Multiplication of 3 and %s would cause overflow", halfMaxPlusOne);
+
       assert e.getMessage().equals(expectedErrorMessage);
     }
 
