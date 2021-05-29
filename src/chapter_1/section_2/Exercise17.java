@@ -12,6 +12,7 @@ public class Exercise17 {
     testSubtraction();
     testMultiplication();
     testDivision();
+    // testOverflowAndUnderflow();
 
     StdOut.println("All tests passed");
   }
@@ -22,10 +23,14 @@ public class Exercise17 {
     assert new Rational(-1, 3).equals(new Rational(1, -3));
     assert !new Rational(-1, 3).equals(new Rational(-1, -3));
     assert new Rational(1, 3).equals(new Rational(-1, -3));
+
+    StdOut.println("Equality tests passed");
   }
 
   private static void testFractionSimplication() {
     assert new Rational(2, 4).equals(new Rational(1, 2));
+
+    StdOut.println("Fraction simplication tests passed");
   }
 
   private static void testAddition() {
@@ -37,26 +42,7 @@ public class Exercise17 {
     assert r1.plus(r3).equals(new Rational(1, 4));
     assert new Rational(1, 4).plus(new Rational(1, 7)).equals(new Rational(11, 28));
 
-    long tooBig = Long.MAX_VALUE / 7 + 1;
-    assert tooBig * 7 < 0; // Assert overflow would happen
-
-    try {
-      new Rational(1, tooBig).plus(new Rational(1, 7));
-      assert false;
-    } catch (AssertionError e) {
-      String expectedErrorMessage = String.format("Multiplication of %s and 7 would cause overflow", tooBig);
-      assert e.getMessage().equals(expectedErrorMessage);
-    }
-
-    long tooLittle = (Long.MIN_VALUE) / 8 - 1;
-    assert tooLittle * 8 > 0;
-
-    try {
-      new Rational(8, tooLittle).plus(new Rational(1, 8));
-    } catch (AssertionError e) {
-      String expectedErrorMessage = String.format("Multiplication of %s and 8 would cause overflow", Math.abs(tooLittle));
-      assert e.getMessage().equals(expectedErrorMessage);
-    }
+    StdOut.println("Addition tests passed");
   }
 
   private static void testSubtraction() {
@@ -66,17 +52,48 @@ public class Exercise17 {
 
     assert r1.minus(r2).equals(new Rational(1, -6));
     assert r1.minus(r3).equals(new Rational(3, 4));
+
+    StdOut.println("Subtraction tests passed");
   }
 
   private static void testMultiplication() {
     assert new Rational(1, 3).times(new Rational(1, 3)).equals(new Rational(1, 9));
     assert new Rational(1, 3).times(new Rational(-1, 1)).equals(new Rational(-1, 3));
     assert new Rational(1, 3).times(new Rational(3, 2)).equals(new Rational(1, 2));
+
+    StdOut.println("Multiplication tests passed");
   }
 
   private static void testDivision() {
     assert new Rational(1, 3).dividedBy(new Rational(2, 3)).equals(new Rational(1, 2));
     assert new Rational(1, 3).dividedBy(new Rational(-1, 1)).equals(new Rational(-1, 3));
+
+    StdOut.println("Division tests passed");
+  }
+
+  private static void testOverflowAndUnderflow() {
+    long halfMaxPlusOne = Long.MAX_VALUE / 2 + 1;
+    long halfMinMinusOne = (Long.MIN_VALUE) / 2 - 1;
+
+    assert halfMaxPlusOne * 2 < 0; // Assert overflow would happen
+    assert halfMinMinusOne * 2 > 0; // Assert underflow would happen
+
+    try {
+      new Rational(2, halfMaxPlusOne).plus(new Rational(2, 2));
+      assert false;
+    } catch (AssertionError e) {
+      String expectedErrorMessage = String.format("Multiplication of %s and 2 would cause overflow", halfMaxPlusOne);
+      assert e.getMessage().equals(expectedErrorMessage);
+    }
+
+    try {
+      new Rational(2, halfMinMinusOne).plus(new Rational(1, 2));
+    } catch (AssertionError e) {
+      String expectedErrorMessage = String.format("Multiplication of %s and 2 would cause overflow", Math.abs(halfMinMinusOne));
+      assert e.getMessage().equals(expectedErrorMessage);
+    }
+
+    new Rational(halfMaxPlusOne, 1).plus(new Rational(halfMaxPlusOne, 1));
   }
 
   private static class Rational {
@@ -96,7 +113,7 @@ public class Exercise17 {
 
     public Rational plus(Rational rhs) {
       long gcd = greatestCommonDivisor(this.denominator, rhs.denominator);
-      long newDenominator = multiplySafely(this.denominator, rhs.denominator) / gcd;
+      long newDenominator = multiplySafely(this.denominator / gcd, rhs.denominator);
 
       return new Rational(
         (newDenominator / this.denominator) * this.numerator +
