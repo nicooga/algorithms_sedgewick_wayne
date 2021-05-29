@@ -94,7 +94,33 @@ public class Exercise17 {
       assert e.getMessage().equals(expectedErrorMessage);
     }
 
-    new Rational(halfMaxPlusOne, 1).plus(new Rational(halfMaxPlusOne, 1));
+    try {
+      Rational r = new Rational(halfMaxPlusOne, 1).plus(new Rational(halfMaxPlusOne, 1));
+      StdOut.println(r);
+      assert false;
+    } catch (AssertionError e) {
+      String expectedErrorMessage = String.format("Addition of %s and %s would cause overflow", halfMaxPlusOne, halfMaxPlusOne);
+
+      assert e.getMessage().equals(expectedErrorMessage);
+    }
+
+    try {
+      Rational r = new Rational(halfMinMinusOne, 1).plus(new Rational(halfMinMinusOne, 1));
+      assert false;
+    } catch (AssertionError e) {
+      String expectedErrorMessage = String.format("Addition of %s and %s would cause underflow", halfMinMinusOne, halfMinMinusOne);
+
+      assert e.getMessage().equals(expectedErrorMessage);
+    }
+
+    try {
+      Rational r = new Rational(halfMinMinusOne, 1).plus(new Rational(halfMinMinusOne, 1));
+      assert false;
+    } catch (AssertionError e) {
+      String expectedErrorMessage = String.format("Addition of %s and %s would cause underflow", halfMinMinusOne, halfMinMinusOne);
+
+      assert e.getMessage().equals(expectedErrorMessage);
+    }
   }
 
   private static class Rational {
@@ -117,8 +143,10 @@ public class Exercise17 {
       long newDenominator = multiplySafely(this.denominator / gcd, rhs.denominator);
 
       return new Rational(
-        (newDenominator / this.denominator) * this.numerator +
-        (newDenominator / rhs.denominator) * rhs.numerator,
+        addSafely(
+          (newDenominator / this.denominator) * this.numerator,
+          (newDenominator / rhs.denominator) * rhs.numerator
+        ),
         newDenominator
       );
     }
@@ -166,6 +194,16 @@ public class Exercise17 {
         String.format("Multiplication of %d and %d would cause underflow", lhs, rhs);
 
       return lhs * rhs;
+    }
+
+    private long addSafely(long lhs, long rhs) {
+      assert rhs <= Long.MAX_VALUE - lhs :
+        String.format("Addition of %d and %d would cause overflow", lhs, rhs);
+
+      assert rhs >= Long.MIN_VALUE - lhs :
+        String.format("Addition of %d and %d would cause underflow", lhs, rhs);
+
+      return lhs + rhs;
     }
   }
 }
