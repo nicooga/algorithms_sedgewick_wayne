@@ -35,12 +35,13 @@ generate_exercise_scaffold() {
 
   echo $1
 
+  mkdir -p $(dirname $file)
   touch $file
+
   tee -a $file << EOF
 package algsex.chapter$chapter.section$section;
 
 import java.util.*;
-import java.lang.*;
 import edu.princeton.cs.algs4.*;
 
 public class Exercise$exercise {
