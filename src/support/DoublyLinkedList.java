@@ -39,6 +39,27 @@ public class DoublyLinkedList<T> {
     return item;
   }
 
+  public void delete(int k) {
+    Node node;
+
+    do {
+      node = first.next;
+      k--;
+    } while (k > 0);
+
+    node.next = node.next.next;
+
+    if (node.next != null) {
+      node.next.prev = node;
+    }
+
+    N--;
+  }
+
+  public boolean isEmpty() {
+    return N == 0;
+  }
+
   private class Node {
     T item;
     Node next;
