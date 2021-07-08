@@ -32,7 +32,7 @@ public class Exercise38 {
     assert q.delete(1) == 1;
     assert q.delete(1) == 2;
     assert q.delete(1) == 3;
-    assert q.delete(1) == 4; // fails here
+    assert q.delete(1) == 4;
 
     try {
       q.delete(1);
@@ -69,51 +69,67 @@ public class Exercise38 {
   }
 
   private static class GeneralizedQueue<T> {
-    private T[] items;
-    private int first;
-    private int last = -1;
+    private Node first;
+    private Node last;
     private int size;
-
-    GeneralizedQueue() {
-      items = (T[]) new Object[10];
-    }
 
     public boolean isEmpty() { return size == 0; }
 
     public void insert(T x) {
-      if (size == items.length) resize(items.length * 2);
+      Node oldLast = last;
 
-      last++;
-      this.items[last] = x;
+      last = new Node();
+      last.item = x;
+
+      if (oldLast == null) first = last;
+      else oldLast.next = last;
+
       size++;
     }
 
     public T delete(int k) {
-      if (size == 0) throw new RuntimeException("Queue is empty");
+      if (isEmpty()) throw new RuntimeException("Queue is empty");
+      assert k >= 1 : "Argument k must be equal to or greater than 1";
 
-      int selectedIndex = first + k - 1;
+      Node node = first;
+      Node prevNode = first;
 
-      T item = items[selectedIndex];
-      items[selectedIndex] = null;
-
-      if (selectedIndex == first)
-        while (items[first] == null && first != last)
-          first++;
-
-      if (first == last && items[first] == null) {
-        first = 0;
-        last = -1;
+      for (int i = 0; i <= k - 2; i++) {
+        prevNode = node;
+        node = node.next;
       }
 
+      T item = node.item;
+
+      if (k == 1) first = node.next;
+      else prevNode.next = prevNode.next.next;
+
       size--;
+
+      if (size == 0) {
+        first = null;
+        last = null;
+      }
 
       return item;
     }
 
-    private void resize(int newSize) {
-      T[] temp = (T[]) new Object[newSize];
-      for (int i = 0; i < size; i++) temp[i] = items[i];
-      items = temp;
+    public String toString() {
+      Node node = first;
+      StringBuilder builder = new StringBuilder();
+
+      while (node != null) {
+        builder.append(node.item.toString());
+        builder.append(' ');
+        node = node.next;
+      }
+
+      return builder.toString();
+    }
+
+    private class Node {
+      T item;
+      Node next;
     }
   }
 }
