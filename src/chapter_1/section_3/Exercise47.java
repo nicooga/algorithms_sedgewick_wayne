@@ -8,6 +8,14 @@ import edu.princeton.cs.algs4.*;
 // Hint: Use a circular linked list, maintaining a pointer to the last item.
 public class Exercise47 {
   public static void main(String[] args) {
+    testQueueContenation();
+    testStackConcatenation();
+    testStequeConcatenation();
+
+    StdOut.println("Tests passed");
+  }
+
+  private static void testQueueContenation() {
     Queue<Integer> q1 = buildQueue(1);
 
     assert q1.dequeue() == 1;
@@ -30,7 +38,9 @@ public class Exercise47 {
     assert q5.dequeue() == 4;
     assert q5.dequeue() == 5;
     assert q5.dequeue() == 6;
+  }
 
+  private static void testStackConcatenation() {
     Stack<Integer> s1 = buildStack(1);
 
     assert s1.pop() == 3;
@@ -53,12 +63,35 @@ public class Exercise47 {
     assert s4.pop() == 6;
     assert s4.pop() == 5;
     assert s4.pop() == 4;
+  }
 
-    StdOut.println("Tests passed");
+  private static void testStequeConcatenation() {
+    Steque<Integer> stq1 = buildSteque(1);
+
+    assert stq1.pop() == 2;
+    assert stq1.pop() == 1;
+    assert stq1.pop() == 3;
+
+    Steque<Integer> stq2 = buildSteque(4);
+
+    assert stq2.pop() == 5;
+    assert stq2.pop() == 4;
+    assert stq2.pop() == 6;
+
+    Steque<Integer> stq3 = buildSteque(1);
+    Steque<Integer> stq4 = buildSteque(4);
+    Steque<Integer> stq5 = stq3.concat(stq4);
+
+    assert stq5.pop() == 2;
+    assert stq5.pop() == 1;
+    assert stq5.pop() == 3;
+    assert stq5.pop() == 5;
+    assert stq5.pop() == 4;
+    assert stq5.pop() == 6;
   }
 
   private static Queue<Integer> buildQueue(int firstItem) {
-    Queue<Integer> q = new Queue();
+    Queue<Integer> q = new Queue<>();
 
     q.enqueue(firstItem);
     q.enqueue(firstItem + 1);
@@ -68,13 +101,23 @@ public class Exercise47 {
   }
 
   private static Stack<Integer> buildStack(int firstItem) {
-    Stack<Integer> s = new Stack();
+    Stack<Integer> s = new Stack<>();
 
     s.push(firstItem);
     s.push(firstItem + 1);
     s.push(firstItem + 2);
 
     return s;
+  }
+
+  private static Steque<Integer> buildSteque(int firstItem) {
+    Steque<Integer> stq = new Steque<>();
+
+    stq.push(firstItem);
+    stq.push(firstItem + 1);
+    stq.enqueue(firstItem + 2);
+
+    return stq;
   }
 
   private static class Queue<T> {
@@ -153,6 +196,62 @@ public class Exercise47 {
       anotherStack.last.next = thisFirst;
 
       last = anotherStack.last;
+
+      return this;
+    }
+
+    private class Node {
+      T item;
+      Node next;
+    }
+  }
+
+  private static class Steque<T> {
+    private Node last;
+
+    public void push(T item) {
+      Node first = new Node();
+      first.item = item;
+
+      if (last == null) {
+        first.next = first;
+        last = first;
+      } else {
+        first.next = last.next;
+        last.next = first;
+      }
+    }
+
+    public void enqueue(T item) {
+      Node oldLast = last;
+
+      last = new Node();
+      last.item = item;
+
+      if (oldLast == null) last.next = last;
+      else {
+        last.next = oldLast.next;
+        oldLast.next = last;
+      }
+    }
+
+    public T pop() {
+      T item = last.next.item;
+
+      if (last.next == last) last = null;
+      else last.next = last.next.next;
+
+      return item;
+    }
+
+    public Steque<T> concat(Steque<T> anotherSteque) {
+      Node thisFirst = last.next;
+      Node anotherFirst = anotherSteque.last.next;
+
+      last.next = anotherFirst;
+      anotherSteque.last.next = thisFirst;
+
+      last = anotherSteque.last;
 
       return this;
     }
