@@ -5,10 +5,12 @@ main() {
   chapter=$1
   section=$2
   exercise=$3
+  exercise_file=./src/chapter_$chapter/section_$section/Exercise$exercise.java
+  support_dir=./src/support
 
   $command
 
-  while inotifywait -q -e close_write ./src/chapter_$chapter/section_$section/Exercise$exercise.java ; do
+  while inotifywait -q -e close_write $exercise_file $support_dir; do
     $command
   done
 }
