@@ -22,7 +22,7 @@ public class Exercise3 {
     double max = 16.0;
 
     public static void run() { // Print table of running times.
-      for (int N = 10; N != 0.0; N *= 2) { // Print time for problem size N.
+      for (int N = 10; N == 10; N *= 2) { // Print time for problem size N.
         // StdOut.println("asdf");
         // double time = timeTrial(N);
         // StdOut.printf("%7d %5.1f\n", N, time);
@@ -45,21 +45,25 @@ public class Exercise3 {
   }
 
   private static class BiGraph {
-    private final int[] GRAPH_SIZE = new int[] { 1920, 1080 };
-    private final Point GRAPH_BOTTOM_LEFT_CORNER = new Point(0, 0);
+    private final int[] WINDOW_SIZE = new int[] { 1920, 1080 };
+    private final Point WINDOW_BOTTOM_LEFT_CORNER = new Point(0, 0);
     private final double PLOT_PADDING_RATIO = 0.1;
+    private final double PLOT_SCALE_PADDING = 50;
     private final double NOTCH_LENGTH = 10;
 
-    private final double PLOT_HORIZONTAL_PADDING = GRAPH_SIZE[0] * PLOT_PADDING_RATIO / 2;
-    private final double PLOT_VERTICAL_PADDING = GRAPH_SIZE[1] * PLOT_PADDING_RATIO / 2;
+    private final double[] PLOT_SIZE = new double[] { WINDOW_SIZE[0] / 2.0, WINDOW_SIZE[1] };
+    private final double PLOT_HORIZONTAL_PADDING = PLOT_SIZE[0] * PLOT_PADDING_RATIO;
+    private final double PLOT_VERTICAL_PADDING = PLOT_SIZE[1] * PLOT_PADDING_RATIO;
+    private final double X_AXIS_LENGTH = PLOT_SIZE[0] - PLOT_HORIZONTAL_PADDING * 2 - PLOT_SCALE_PADDING;
+    private final double Y_AXIS_LENGTH = PLOT_SIZE[1] - PLOT_VERTICAL_PADDING * 2 - PLOT_SCALE_PADDING;
 
     private final StdDraw stdDraw = new StdDraw();
     private int maxValue = 16;
 
     public BiGraph() {
-      stdDraw.setCanvasSize(GRAPH_SIZE[0], GRAPH_SIZE[1]);
-      stdDraw.setXscale(0, GRAPH_SIZE[0]);
-      stdDraw.setYscale(0, GRAPH_SIZE[1]);
+      stdDraw.setCanvasSize(WINDOW_SIZE[0], WINDOW_SIZE[1]);
+      stdDraw.setXscale(0, WINDOW_SIZE[0]);
+      stdDraw.setYscale(0, WINDOW_SIZE[1]);
     }
 
     public void plotValue(double x, double fX) {
@@ -69,39 +73,59 @@ public class Exercise3 {
 
     private void drawPlots() {
       Point logLogPlotBottomLeftCorner =
-        GRAPH_BOTTOM_LEFT_CORNER
+        WINDOW_BOTTOM_LEFT_CORNER
           .translateX(PLOT_HORIZONTAL_PADDING)
           .translateY(PLOT_VERTICAL_PADDING);
 
-      // Point standardPlotBottomLeftCorner = GRAPH_BOTTOM_LEFT_CORNER.translateX(GRAPH_SIZE[0] / 2 + PLOT_HORIZONTAL_PADDING);
+      Point standardPlotBottomLeftCorner =
+        WINDOW_BOTTOM_LEFT_CORNER
+          .translateX(PLOT_SIZE[0] + PLOT_HORIZONTAL_PADDING)
+          .translateY(PLOT_VERTICAL_PADDING);
 
       drawPlot(logLogPlotBottomLeftCorner);
-      // drawPlot(standardPlotBottomLeftCorner);
+      drawPlot(standardPlotBottomLeftCorner);
     }
 
     private void drawPlot(Point bottomLeftCorner) {
-      drawAxes(bottomLeftCorner);
-      // drawScale(bottomLeftCorner);
+      Point origin = bottomLeftCorner.translateXY(PLOT_SCALE_PADDING, PLOT_SCALE_PADDING);
+
+      drawAxes(origin);
+      drawScale(origin);
     }
 
-    private void drawAxes(Point bottomLeftCorner) {
-      Point topLeftCorner = bottomLeftCorner.translateY(GRAPH_SIZE[1] - PLOT_VERTICAL_PADDING * 2);
-      StdOut.println(bottomLeftCorner);
-      StdOut.println(topLeftCorner);
-      // Point bottomRightCorner = bottomLeftCorner.translateX(GRAPH_SIZE[0] - PLOT_HORIZONTAL_PADDING * 2);
-      stdDraw.drawLine(bottomLeftCorner, topLeftCorner);
-      // stdDraw.drawLine(bottomLeftCorner, bottomRightCorner);
+    private void drawAxes(Point origin) {
+      drawXAxis(origin);
+      drawYAxis(origin);
     }
 
-    // private void drawScale(Point bottomLeftCorner) {
-    //   int notchesCount = (int) lg(maxValue);
+    private void drawXAxis(Point origin) {
+      Point axisEnd = origin.translateX(X_AXIS_LENGTH);
+      stdDraw.drawLine(origin, axisEnd);
+    }
 
-    //   for (int i = 0; i < notchesCount; i++)
-    //     stdDraw.drawLine(bottomLeftCorner, bottomLeftCorner.translateY(-NOTCH_LENGTH));
-    // }
+    private void drawYAxis(Point origin) {
+      Point axisEnd = origin.translateY(Y_AXIS_LENGTH);
+      stdDraw.drawLine(origin, axisEnd);
+    }
 
-    // private double lg(double value) {
-    //   return Math.log(maxValue) / Math.log(2);
-    // }
+    private void drawScale(Point origin) {
+      double notchesCount = lg(maxValue);
+      double notchSpacing = X_AXIS_LENGTH / (notchesCount - 1);
+
+      for (int i = 0; i < notchesCount; i++) {
+        Point notchStart = origin.translateX(i * notchSpacing);
+        Point notchEnd = notchStart.translateY(-NOTCH_LENGTH);
+
+        stdDraw.drawLine(notchStart, notchEnd);
+
+        String notchLabel = Integer.toString(i + 1);
+
+        stdDraw.drawText(notchEnd.translateY(-PLOT_SCALE_PADDING / 2), notchLabel);
+      }
+    }
+
+    private double lg(double value) {
+      return Math.log(maxValue) / Math.log(2);
+    }
   }
 }

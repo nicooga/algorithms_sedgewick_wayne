@@ -8,6 +8,10 @@ public class StdDraw {
     edu.princeton.cs.algs4.StdDraw.line(a.getX(), a.getY(), b.getX(), b.getY());
   }
 
+  public void drawText(Point p, String text) {
+    edu.princeton.cs.algs4.StdDraw.text(p.getX(), p.getY(), text);
+  }
+
   public void setCanvasSize(int w, int h) { edu.princeton.cs.algs4.StdDraw.setCanvasSize(w, h); }
   public void setXscale(double min, double max) { edu.princeton.cs.algs4.StdDraw.setXscale(min, max); } 
   public void setYscale(double min, double max) { edu.princeton.cs.algs4.StdDraw.setYscale(min, max); } 
