@@ -21,15 +21,13 @@ public class Exercise3 {
 
   private static class DoublingTest {
     public static void run() { // Print table of running times.
-      for (int N = 3; N > 0.0 && N <= 3 * Math.pow(2, 4); N *= 2) { // Print time for problem size N.
-        // StdOut.println("asdf");
+      for (int N = 3; N > 0.0; N *= 2) { // Print time for problem size N.
         // double time = timeTrial(N);
-        // StdOut.printf("%7d %5.1f\n", N, time);
-        // StdOut.printf("f(%s) = %s\n", N, Math.pow(N, 2));
-        StdOut.println("=====");
+
+        StdOut.println("===================");
         StdOut.printf("Plotting value f(%s) = %s\n", N, Math.pow(N, 2));
         biGraph.addValue(N, Math.pow(N, 2));
-        StdOut.println("=====");
+        StdOut.println("===================");
       }
     }
 
@@ -54,7 +52,7 @@ public class Exercise3 {
     private final double PLOT_SCALE_PADDING = 50;
     private final double NOTCH_LENGTH = 10;
 
-    // Derivated constants. Not intended to be modified to weak behaviour.
+    // Derivated constants. Not intended to be modified to tweak behaviour.
     private final double[] PLOT_SIZE = new double[] { WINDOW_SIZE[0] / 2.0, WINDOW_SIZE[1] };
     private final double PLOT_HORIZONTAL_PADDING = PLOT_SIZE[0] * PLOT_PADDING_RATIO;
     private final double PLOT_VERTICAL_PADDING = PLOT_SIZE[1] * PLOT_PADDING_RATIO;
@@ -83,6 +81,7 @@ public class Exercise3 {
 
       this.logLogPlot = new LogLogPlot();
       logLogPlot.initialize(LOG_LOG_PLOT_BOTTOM_LEFT_CORNER);
+
       this.standardPlot = new StandardPlot();
       standardPlot.initialize(STANDARD_PLOT_BOTTOM_LEFT_CORNER);
 
@@ -91,8 +90,6 @@ public class Exercise3 {
     }
 
     public void addValue(double x, double y) {
-      stdDraw.clear();
-
       Value value = new Value();
       value.x = x;
       value.y = y;
@@ -100,24 +97,30 @@ public class Exercise3 {
       values.enqueue(value);
 
       logLogPlot.addValue(value);
-      StdOut.println("==");
       standardPlot.addValue(value);
     }
 
     private abstract class Plot {
       Point bottomLeftCorner;
+      Point topRightCorner;
       Point origin;
-      double maxX = 16;
-      double maxY = 16;
+      double maxX;
+      double maxY;
       int horizontalNotchesCount;
       int verticalNotchesCount;
 
       public void initialize(Point bottomLeftCorner) {
         setBottomLeftCorner(bottomLeftCorner);
+        setMaxX(16);
+        setMaxY(16);
       }
 
       public void setBottomLeftCorner(Point bottomLeftCorner) {
         this.bottomLeftCorner = bottomLeftCorner;
+        this.topRightCorner = bottomLeftCorner.translateXY(
+          PLOT_SCALE_PADDING + X_AXIS_LENGTH,
+          PLOT_SCALE_PADDING + Y_AXIS_LENGTH
+        );
         this.origin = bottomLeftCorner.translateXY(PLOT_SCALE_PADDING, PLOT_SCALE_PADDING);
       }
 
@@ -135,10 +138,11 @@ public class Exercise3 {
         }
         
         if (needsRedraw) {
+          clear();
           draw();
           for (Value v : values) drawValue(v);
         }
-        else drawValue(value);
+          else drawValue(value);
       }
 
       public void draw() {
@@ -161,6 +165,10 @@ public class Exercise3 {
       private void drawYAxis() {
         Point axisEnd = origin.translateY(Y_AXIS_LENGTH);
         stdDraw.drawLine(origin, axisEnd);
+      }
+
+      private void clear() {
+        stdDraw.clear(bottomLeftCorner, topRightCorner);
       }
 
       protected abstract void drawValue(Value value);
@@ -188,7 +196,7 @@ public class Exercise3 {
       }
 
       protected void drawXScale() {
-        double notchesCount = Math.ceil(lg(maxX));
+        int notchesCount = (int) Math.ceil(lg(maxX));
         double notchesSpacing = X_AXIS_LENGTH / (notchesCount - 1);
 
         for (int i = 0; i < notchesCount; i++) {
@@ -197,8 +205,8 @@ public class Exercise3 {
 
           stdDraw.drawLine(notchStart, notchEnd);
 
-          String notchLabel = i > 13 ? String.format("2^%d", i) : String.format("%.0f", Math.pow(2, i + 1));
-          double verticalOffset = i % 2 == 0 ? -PLOT_HORIZONTAL_PADDING / 3 : -2 * PLOT_HORIZONTAL_PADDING / 3;
+          String notchLabel = i <= 13 ? String.format("%.0f", Math.pow(2, i)) : String.format("2^%d", i);
+          double verticalOffset = i % 2 == 0 ? -PLOT_VERTICAL_PADDING / 3 : -2 * PLOT_VERTICAL_PADDING / 3;
 
           stdDraw.drawText(
             notchEnd.translateY(verticalOffset),
@@ -208,7 +216,7 @@ public class Exercise3 {
       }
 
       protected void drawYScale() {
-        double notchesCount = Math.ceil(lg(maxY));
+        int notchesCount = (int) Math.ceil(lg(maxY));
         double notchesSpacing = Y_AXIS_LENGTH / (notchesCount - 1);
 
         for (int i = 0; i < notchesCount; i++) {
@@ -217,7 +225,7 @@ public class Exercise3 {
 
           stdDraw.drawLine(notchStart, notchEnd);
 
-          String notchLabel = i > 13 ? String.format("2^%d", i) : String.format("%.0f", Math.pow(2, i + 1));
+          String notchLabel = i <= 13 ? String.format("%.0f", Math.pow(2, i)) : String.format("2^%d", i);
           double horizontalOffset = i % 2 == 0 ? -PLOT_HORIZONTAL_PADDING / 3 : -2 * PLOT_HORIZONTAL_PADDING / 3;
 
           stdDraw.drawText(
@@ -228,24 +236,107 @@ public class Exercise3 {
       }
 
       protected void setMaxX(double value) {
-        this.maxX = Math.pow(2, Math.ceil(lg(value)));
+        this.maxX = smallestGreaterOrEqualPowerOfTwo(value);
       }
 
       protected void setMaxY(double value) {
-        this.maxY = Math.pow(2, Math.ceil(lg(value)));
+        this.maxY = smallestGreaterOrEqualPowerOfTwo(value);
+      }
+
+      private double smallestGreaterOrEqualPowerOfTwo(double value) {
+        return Math.pow(2, Math.ceil(lg(value)));
       }
     }
 
     private class StandardPlot extends Plot {
-      protected void drawValue(Value value) { }
-      protected void drawXScale() { }
-      protected void drawYScale() { }
+      protected void drawValue(Value value) {
+        assert value.x <= maxX;
+        assert value.y <= maxY;
 
-      protected void setMaxX(double value) {
-        // Math.pow(10, Math.ceil())
+        Point circleCenter =
+          origin.translateXY(
+            X_AXIS_LENGTH / maxX * value.x,
+            Y_AXIS_LENGTH / maxY * value.y
+          );
+
+        assert circleCenter.getX() <= origin.getX() + X_AXIS_LENGTH;
+        assert circleCenter.getY() <= origin.getY() + Y_AXIS_LENGTH;
+
+        stdDraw.drawCircle(circleCenter, 2);
       }
 
-      protected void setMaxY(double value) { }
+      protected void drawXScale() {
+        double notchesCount;
+
+        if (isAPowerOfTen(maxX)) notchesCount = 11;
+        else notchesCount = maxX / Math.pow(10, Math.floor(log(10, maxX))) + 1;
+
+        double notchesSpacing = X_AXIS_LENGTH / (notchesCount - 1);
+
+        for (int i = 0; i < notchesCount; i++) {
+          Point notchStart = origin.translateX(i * notchesSpacing);
+          Point notchEnd = notchStart.translateY(-NOTCH_LENGTH);
+
+          stdDraw.drawLine(notchStart, notchEnd);
+
+          double notchValue = (maxX / (notchesCount - 1)) * i;
+          assert notchValue % 1 == 0;
+          String notchLabel = Integer.toString((int) notchValue);
+          double verticalOffset = -PLOT_VERTICAL_PADDING * (isEven(i) ? 1/3.0 : 2/3.0);
+
+          stdDraw.drawText(
+            notchEnd.translateY(verticalOffset),
+            notchLabel
+          );
+        }
+      }
+
+      protected void drawYScale() {
+        double notchesCount;
+
+        StdOut.println("At the time of drawing Y scale, maxY is: " + maxY);
+
+        if (isAPowerOfTen(maxY)) notchesCount = 11;
+        else notchesCount = maxY / Math.pow(10, Math.floor(log(10, maxY))) + 1;
+
+        double notchesSpacing = Y_AXIS_LENGTH / (notchesCount - 1);
+
+        for (int i = 0; i < notchesCount; i++) {
+          Point notchStart = origin.translateY(i * notchesSpacing);
+          Point notchEnd = notchStart.translateX(-NOTCH_LENGTH);
+
+          stdDraw.drawLine(notchStart, notchEnd);
+
+          double notchValue = (maxY / (notchesCount - 1)) * i;
+          assert notchValue % 1 == 0;
+          String notchLabel = Integer.toString((int) notchValue);
+          double horizontalOffset = -PLOT_HORIZONTAL_PADDING * (isEven(i) ? 1/3.0 : 2/3.0);
+
+          stdDraw.drawText(
+            notchEnd.translateX(horizontalOffset),
+            notchLabel
+          );
+        }
+      }
+
+      protected void setMaxX(double value) { this.maxX = scaleMax(value); }
+      protected void setMaxY(double value) { this.maxY = scaleMax(value); }
+
+      private double scaleMax(double value) {
+        double log10 = log(10, value);
+        boolean closerToNextPowerOfTen = log10 % 1 > 0.85;
+
+        if (closerToNextPowerOfTen)
+          return Math.pow(10, Math.ceil(log10));
+        else {
+          double roundingFactor = Math.pow(10, Math.floor(log10));
+          return Math.ceil(value / roundingFactor) * roundingFactor;
+        }
+      }
+
+      private boolean isAPowerOfTen(double value) {
+        return log(10, value) % 1 == 0;
+      }
     }
 
     private class Value {
@@ -263,6 +354,10 @@ public class Exercise3 {
     
     private double log(int base, double value) {
       return Math.log(value) / Math.log(base);
+    }
+
+    private boolean isEven(int value)  {
+      return value % 2 == 0;
     }
   }
 }
