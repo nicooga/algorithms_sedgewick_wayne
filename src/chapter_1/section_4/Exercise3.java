@@ -22,12 +22,9 @@ public class Exercise3 {
   private static class DoublingTest {
     public static void run() { // Print table of running times.
       for (int N = 3; N > 0.0; N *= 2) { // Print time for problem size N.
-        // double time = timeTrial(N);
-
-        StdOut.println("===================");
-        StdOut.printf("Plotting value f(%s) = %s\n", N, Math.pow(N, 2));
-        biGraph.addValue(N, Math.pow(N, 2));
-        StdOut.println("===================");
+        double time = timeTrial(N);
+        StdOut.printf("Time trial for ThreeSum with %s numbers is %s\n", N, time);
+        biGraph.addValue(N, time);
       }
     }
 
@@ -58,14 +55,8 @@ public class Exercise3 {
     private final double PLOT_VERTICAL_PADDING = PLOT_SIZE[1] * PLOT_PADDING_RATIO;
     private final double X_AXIS_LENGTH = PLOT_SIZE[0] - PLOT_HORIZONTAL_PADDING * 2 - PLOT_SCALE_PADDING;
     private final double Y_AXIS_LENGTH = PLOT_SIZE[1] - PLOT_VERTICAL_PADDING * 2 - PLOT_SCALE_PADDING;
-    private final Point LOG_LOG_PLOT_BOTTOM_LEFT_CORNER =
-      WINDOW_BOTTOM_LEFT_CORNER
-        .translateX(PLOT_HORIZONTAL_PADDING)
-        .translateY(PLOT_VERTICAL_PADDING);
-    private final Point STANDARD_PLOT_BOTTOM_LEFT_CORNER =
-      WINDOW_BOTTOM_LEFT_CORNER
-        .translateX(PLOT_SIZE[0] + PLOT_HORIZONTAL_PADDING)
-        .translateY(PLOT_VERTICAL_PADDING);
+    private final Point LOG_LOG_PLOT_BOTTOM_LEFT_CORNER = WINDOW_BOTTOM_LEFT_CORNER;
+    private final Point STANDARD_PLOT_BOTTOM_LEFT_CORNER = WINDOW_BOTTOM_LEFT_CORNER.translateX(WINDOW_SIZE[0] / 2);
 
     private final StdDraw stdDraw = new StdDraw();
     private final Queue<Value> values = new Queue<>();
@@ -117,11 +108,11 @@ public class Exercise3 {
 
       public void setBottomLeftCorner(Point bottomLeftCorner) {
         this.bottomLeftCorner = bottomLeftCorner;
-        this.topRightCorner = bottomLeftCorner.translateXY(
-          PLOT_SCALE_PADDING + X_AXIS_LENGTH,
-          PLOT_SCALE_PADDING + Y_AXIS_LENGTH
+        this.topRightCorner = bottomLeftCorner.translateXY(PLOT_SIZE[0], PLOT_SIZE[1]);
+        this.origin = bottomLeftCorner.translateXY(
+          PLOT_HORIZONTAL_PADDING + PLOT_SCALE_PADDING,
+          PLOT_HORIZONTAL_PADDING + PLOT_SCALE_PADDING
         );
-        this.origin = bottomLeftCorner.translateXY(PLOT_SCALE_PADDING, PLOT_SCALE_PADDING);
       }
 
       public void addValue(Value value) {
@@ -183,6 +174,9 @@ public class Exercise3 {
         assert value.x <= maxX;
         assert value.y <= maxY;
 
+        if (value.x <= 0) return;
+        if (value.y <= 0) return;
+
         Point circleCenter =
           origin.translateXY(
             X_AXIS_LENGTH / lg(maxX) * lg(value.x),
@@ -192,7 +186,15 @@ public class Exercise3 {
         assert circleCenter.getX() <= origin.getX() + X_AXIS_LENGTH;
         assert circleCenter.getY() <= origin.getY() + Y_AXIS_LENGTH;
 
-        stdDraw.drawCircle(circleCenter, 2);
+        try {
+          stdDraw.drawCircle(circleCenter, 2);
+        } catch (Exception e) {
+          StdOut.println("Y_AXIS_LENGTH: " + Y_AXIS_LENGTH);
+          StdOut.println("lg(maxY): " + lg(maxY));
+          StdOut.println("lg(value.y): " + lg(value.y));
+          StdOut.println("value.y: " + value.y);
+          throw e;
+        }
       }
 
       protected void drawXScale() {
@@ -293,8 +295,6 @@ public class Exercise3 {
 
       protected void drawYScale() {
         double notchesCount;
-
-        StdOut.println("At the time of drawing Y scale, maxY is: " + maxY);
 
         if (isAPowerOfTen(maxY)) notchesCount = 11;
         else notchesCount = maxY / Math.pow(10, Math.floor(log(10, maxY))) + 1;
