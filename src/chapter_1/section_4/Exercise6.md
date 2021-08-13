@@ -32,12 +32,31 @@ Answers:
 a.
 
 Short answer: O(N)  
-Long answer:
 
-Given the frequency of execution of the main loop can be expressed by:
-
+Long answer: The frequency of execution of the main loop can be expressed by:
 
 ![expression1](./Exercise6/expression1.png)
+
+... which we can simplify by removing flooring, ceiling and superfluous constants:
+
+![expression2](./Exercise6/expression2.png)
+
+Also:
+
+![expression3](./Exercise6/expression3.png)  
+![expression4](./Exercise6/expression4.png)  
+![expression5](./Exercise6/expression5.png)  
+![expression6](./Exercise6/expression6.png)  
+
+So we can further simplify the first expression to:
+
+![expression7](./Exercise6/expression7.png)  
+![expression8](./Exercise6/expression8.png)  
+![expression9](./Exercise6/expression9.png)  
+![expression10](./Exercise6/expression10.png)  
+
+
+... which finally means that the order of growth of this code is just `O(N)`.
 
 b.  
 c.  
