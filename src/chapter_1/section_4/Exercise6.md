@@ -29,9 +29,7 @@ for (int i = 1; i < N; i *= 2)
 
 Answers:
 
-a.
-
-Short answer: O(N)  
+a. Short answer: `O(N)`  
 
 Long answer: The frequency of execution of the main loop can be expressed by:
 
@@ -58,5 +56,25 @@ So we can further simplify the first expression to:
 
 ... which finally means that the order of growth of this code is just `O(N)`.
 
-b.  
+b. Short answer: `O(N)`  
+
+Long answer: The frequency of execution of the main main loop can be expressed by:  
+
+![expression11](./Exercise6/expression11.png)  
+
+... which looks familiar to me because is a way we can express the value of a binary number of length `floor(lg(N))` and comprised of only "1" digits.  
+
+A binary number of length `L` comprised of only ones is always equal to `2^L  - 1`.
+For example: `111` in binary is `2^0 + 2^1 + 2^2 = 7`, which is also `2^3 - 1`.
+
+So we can replace the orignal formula with just:
+
+![expression12](./Exercise6/expression12.png)  
+
+... which for the purpose of algorithm complexity analysis is the same as:
+
+![expression13](./Exercise6/expression13.png)  
+
+So this code fragment has `O(N)` complexity.
+
 c.  
