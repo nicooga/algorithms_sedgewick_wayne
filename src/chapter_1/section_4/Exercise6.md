@@ -77,4 +77,15 @@ So we can replace the orignal formula with just:
 
 So this code fragment has `O(N)` complexity.
 
-c.  
+c. Short answer: `O(N*log(N))`
+
+Long answer: the frequency of execution of the main loop can be expressed as:
+
+![expression14](./Exercise6/expression14.png)  
+
+... which after a little of massaging can be simplified to:
+
+
+![expression14](./Exercise6/expression15.png)  
+
+This proves that this code fragment has linearithmic complexity.
