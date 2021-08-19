@@ -10,7 +10,7 @@ public class Exercise10 {
     runTest(1, new int[] { 5, 3, 4, 1, 2 }, 0);
     runTest(5, new int[] { 5, 2, 4, 1, 2 }, 4);
     runTest(1, new int[] { 5, 2, 4, 9, 1, 1, 1, 2, 2, 2 }, 0);
-    runTest(2, new int[] { 5, 2, 4, 9, 1, 1, 1, 2, 2, 2 }, 3);
+    runTest(2, new int[] { 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2 }, 1);
 
     StdOut.println("Tests passed");
   }
@@ -34,6 +34,7 @@ public class Exercise10 {
 
   private static class BinarySearch {
     public static int rank(int key, int[] a) {
+      StdOut.println(Arrays.toString(a));
       return rank(key, a, 0, a.length - 1);
     }
 
@@ -45,6 +46,8 @@ public class Exercise10 {
       if (a[mid] < key) return rank(key, a, mid+1, hi);
       else if (a[mid] > key) return rank(key, a, lo, mid-1);
       else {
+        StdOut.printf("key: %s, lo: %s, hi: %s, mid: %s\n", key, lo, hi, mid);
+
         int potentialLowerDup = rank(key, a, lo, mid-1);
         if (potentialLowerDup != -1) return potentialLowerDup;
         return mid;
