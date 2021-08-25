@@ -2,6 +2,8 @@ package algsex.misc;
 
 import algsex.support.Test;
 
+// Let's confirm the hipotesis that binary search algorithm's
+// inner loop frequency of execution in the worst case is lg(N) + 2.
 public class BinarySearchFrequencyTest {
     public static void main(String[] _args) {
         assert InstrumentedBinarySearch.rank(1, new int[] { 0, 0, 0, 1, 0, 0, 0 }) == 3;

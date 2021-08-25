@@ -67,11 +67,12 @@ public class Exercise14 {
   private static class FourSumV2 {
     public static int count(int[] a) {
       int N = a.length;
-      Pair[] pairs = buildPairs(a);
+      Pair[] pairs = buildPairs(a); // quadratic complexity
       int count = 0;
 
       for (int i = 0; i < N; i++) {
         for (int j = i+1; j < N; j++) {
+          // frequency of execution: (N^2 - N)/2
           Pair currentPair = new Pair(a, i, j);
           int partialCount = countOppositePairsFor(currentPair, pairs);
           count += partialCount;
@@ -90,6 +91,7 @@ public class Exercise14 {
 
       for (int i = 0; i < N; i++)
         for (int j = i+1; j < N; j++) {
+          // frequency of execution: (N^2 - N)/2
           pairs[index] = new Pair(a, i, j);
           index++;
         }
