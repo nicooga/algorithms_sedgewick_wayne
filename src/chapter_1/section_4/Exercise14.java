@@ -7,20 +7,20 @@ import algsex.support.Test;
 // 1.4.14 4-sum. Develop an algorithm for the 4-sum problem.
 public class Exercise14 {
   public static void main(String[] args) {
-    // Test.assertEqual(
-    //   FourSum.count(new int[] { 1, 2, 3, -6 }),
-    //   1
-    // );
+    Test.assertEqual(
+      FourSum.count(new int[] { 1, 2, 3, -6 }),
+      1
+    );
 
-    // Test.assertEqual(
-    //   FourSum.count(new int[] { 1, 2, 3, -6, 4, -10, -8 }),
-    //   2
-    // );
+    Test.assertEqual(
+      FourSum.count(new int[] { 1, 2, 3, -6, 4, -10, -8 }),
+      2
+    );
 
-    // Test.assertEqual(
-    //   FourSumV2.count(new int[] { 1, 2, 3, -6 }),
-    //   1
-    // );
+    Test.assertEqual(
+      FourSumV2.count(new int[] { 1, 2, 3, -6 }),
+      1
+    );
 
     Test.assertEqual(
       FourSumV2.count(new int[] { 1, 2, 3, -6, 4, -10, -8 }),
@@ -70,14 +70,10 @@ public class Exercise14 {
       Pair[] pairs = buildPairs(a);
       int count = 0;
 
-      // for (int i = 0; i < pairs.length; i++)
-      //   StdOut.println(pairs[i]);
-
       for (int i = 0; i < N; i++) {
         for (int j = i+1; j < N; j++) {
           Pair currentPair = new Pair(a, i, j);
           int partialCount = countOppositePairsFor(currentPair, pairs);
-          StdOut.println("currentPair: " + currentPair);
           count += partialCount;
         }
       }
@@ -144,7 +140,7 @@ public class Exercise14 {
     private static int seekLowestMatchingPair(Pair[] pairs, int index, int requiredMinIndex, int targetSum) {
       int lowest = index;
 
-      if (pairs[lowest].minIndex() > requiredMinIndex)  {
+      if (pairs[index].minIndex() > requiredMinIndex)  {
         while (
           pairs[lowest].minIndex() > requiredMinIndex &&
           lowest-1 >= 0 &&
@@ -153,14 +149,14 @@ public class Exercise14 {
         ) lowest--;
 
         return lowest;
-      } else if (pairs[lowest].minIndex() <= requiredMinIndex) {
+      } else if (pairs[index].minIndex() <= requiredMinIndex) {
         while (
-          pairs[lowest].minIndex() < requiredMinIndex &&
+          pairs[lowest].minIndex() <= requiredMinIndex &&
           lowest+1 < pairs.length &&
           pairs[lowest+1].sum() == targetSum
         ) lowest++;
 
-        if (pairs[lowest].minIndex() < requiredMinIndex) return -1;
+        if (pairs[lowest].minIndex() <= requiredMinIndex) return -1;
 
         return lowest;
       } else throw new RuntimeException("This shouldn't happen");
