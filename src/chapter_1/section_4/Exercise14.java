@@ -7,20 +7,20 @@ import algsex.support.Test;
 // 1.4.14 4-sum. Develop an algorithm for the 4-sum problem.
 public class Exercise14 {
   public static void main(String[] args) {
-    Test.assertEqual(
-      FourSum.count(new int[] { 1, 2, 3, -6 }),
-      1
-    );
+    // Test.assertEqual(
+    //   FourSum.count(new int[] { 1, 2, 3, -6 }),
+    //   1
+    // );
 
-    Test.assertEqual(
-      FourSum.count(new int[] { 1, 2, 3, -6, 4, -10, -8 }),
-      2
-    );
+    // Test.assertEqual(
+    //   FourSum.count(new int[] { 1, 2, 3, -6, 4, -10, -8 }),
+    //   2
+    // );
 
-    Test.assertEqual(
-      FourSumV2.count(new int[] { 1, 2, 3, -6 }),
-      1
-    );
+    // Test.assertEqual(
+    //   FourSumV2.count(new int[] { 1, 2, 3, -6 }),
+    //   1
+    // );
 
     Test.assertEqual(
       FourSumV2.count(new int[] { 1, 2, 3, -6, 4, -10, -8 }),
@@ -67,12 +67,11 @@ public class Exercise14 {
   private static class FourSumV2 {
     public static int count(int[] a) {
       int N = a.length;
-      Pair[] pairs = buildPairs(a); // quadratic complexity
+      Pair[] pairs = buildPairs(a);
       int count = 0;
 
       for (int i = 0; i < N; i++) {
         for (int j = i+1; j < N; j++) {
-          // frequency of execution: (N^2 - N)/2
           Pair currentPair = new Pair(a, i, j);
           int partialCount = countOppositePairsFor(currentPair, pairs);
           count += partialCount;
@@ -103,72 +102,92 @@ public class Exercise14 {
       return pairs;
     }
 
-    // We need to count all the pairs that have the same sum as the pair `p` but with the opposite sign (multiplied by minus one),
-    // and whose lIndex and rIndex are both greater than `p`'s.
-    // This last check prevents us from counting matching pairs twice.
     private static int countOppositePairsFor(Pair p, Pair[] pairs) {
-      int targetSum = -p.sum();
-      int index = findPairWithSum(targetSum, pairs);
+      int matchingSumEnd = findPairWithSumRight(-p.sum(), pairs);
 
-      if (index == -1) return 0;
+      if (matchingSumEnd == -1) return 0;
+      if (pairs[matchingSumEnd].maxIndex() <= p.maxIndex()) return 0;
+      if (pairs[matchingSumEnd].minIndex() <= p.maxIndex()) return 0;
 
-      assert pairs[index].sum() == targetSum;
+      int matchingSumStart = findPairWithSumLeft(-p.sum(), pairs, 0, matchingSumEnd);
 
-      int lowestMatch = seekLowestMatchingPair(pairs, index, p.maxIndex(), targetSum);
+      if (pairs[matchingSumStart].minIndex() > p.maxIndex()) {
+        return matchingSumEnd - matchingSumStart + 1;
+      }
 
-      if (lowestMatch == -1) return 0;
+      int matchingMinIndexStart =
+        findFirstPairWithMinIndexGreaterThan(
+          p.maxIndex(),
+          pairs,
+          matchingSumStart+1,
+          matchingSumEnd
+        );
 
-      int highestMatch = seekHighestMatchingPair(pairs, index, p.maxIndex(), targetSum);
+      assert matchingMinIndexStart != -1;
 
-      if (highestMatch == -1) return 0;
-
-      return highestMatch - lowestMatch + 1;
+      return matchingSumEnd - matchingMinIndexStart + 1;
     }
 
-    private static int findPairWithSum(int sum, Pair[] pairs) {
-      return findPairWithSum(sum, pairs, 0, pairs.length-1);
+    private static int findPairWithSumRight(int sum, Pair[] pairs) {
+      return findPairWithSumRight(sum, pairs, 0, pairs.length-1);
     }
 
-    private static int findPairWithSum(int sum, Pair[] pairs, int lo, int hi) {
+    private static int findPairWithSumRight(int sum, Pair[] pairs, int lo, int hi) {
       if (lo > hi) return -1;
 
       int mid = (lo + hi) / 2;
 
-      if (pairs[mid].sum() > sum) return findPairWithSum(sum, pairs, lo, mid-1);
-      else if (pairs[mid].sum() < sum) return findPairWithSum(sum, pairs, mid+1, hi);
-      else return mid;
+      if (pairs[mid].sum() > sum) return findPairWithSumRight(sum, pairs, lo, mid-1);
+      else if (pairs[mid].sum() < sum) return findPairWithSumRight(sum, pairs, mid+1, hi);
+      else {
+        int higherMatch = findPairWithSumRight(sum, pairs, mid+1, hi);
+        if (higherMatch != -1) return higherMatch;
+        return mid;
+      }
     }
 
-    private static int seekLowestMatchingPair(Pair[] pairs, int index, int requiredMinIndex, int targetSum) {
-      int lowest = index;
-
-      if (pairs[index].minIndex() > requiredMinIndex)  {
-        while (
-          pairs[lowest].minIndex() > requiredMinIndex &&
-          lowest-1 >= 0 &&
-          pairs[lowest-1].minIndex() > requiredMinIndex &&
-          pairs[lowest-1].sum() == targetSum
-        ) lowest--;
-
-        return lowest;
-      } else if (pairs[index].minIndex() <= requiredMinIndex) {
-        while (
-          pairs[lowest].minIndex() <= requiredMinIndex &&
-          lowest+1 < pairs.length &&
-          pairs[lowest+1].sum() == targetSum
-        ) lowest++;
-
-        if (pairs[lowest].minIndex() <= requiredMinIndex) return -1;
-
-        return lowest;
-      } else throw new RuntimeException("This shouldn't happen");
+    private static int findPairWithSumLeft(int sum, Pair[] pairs, int lo) {
+      return findPairWithSumLeft(sum, pairs, lo, pairs.length-1);
     }
 
-    private static int seekHighestMatchingPair(Pair[] pairs, int index, int requiredMinIndex, int targetSum) {
-      int highest = index;
-      while(highest+1 < pairs.length && pairs[highest+1].sum() == targetSum) highest++;
-      if (pairs[highest].minIndex() < requiredMinIndex) return -1;
-      return highest;
+    private static int findPairWithSumLeft(int sum, Pair[] pairs, int lo, int hi) {
+      if (lo > hi) return -1;
+
+      int mid = (lo + hi) / 2;
+
+      if (pairs[mid].sum() > sum) return findPairWithSumLeft(sum, pairs, lo, mid-1);
+      else if (pairs[mid].sum() < sum) return findPairWithSumLeft(sum, pairs, mid+1, hi);
+      else {
+        int lowerMatch = findPairWithSumLeft(sum, pairs, lo, mid-1);
+        if (lowerMatch != -1) return lowerMatch;
+        return mid;
+      }
+    }
+
+    private static int findFirstPairWithMinIndexGreaterThan(int index, Pair[] pairs, int lo, int hi) {
+      if (lo > hi) return -1;
+
+      if (lo == hi) {
+        if (
+          pairs[lo].minIndex() <= index &&
+          lo+1 < pairs.length &&
+          pairs[lo+1].sum() == pairs[lo].sum()
+        )
+          return lo+1;
+        else
+          return lo;
+      }
+
+      int mid = (lo + hi) / 2;
+
+      if (pairs[mid].minIndex() > index)
+        return findFirstPairWithMinIndexGreaterThan(index, pairs, lo, mid-1);
+      else if (pairs[mid].minIndex() < index)
+        return findFirstPairWithMinIndexGreaterThan(index, pairs, mid+1, hi);
+      else if (mid+1 < pairs.length && pairs[mid+1].sum() == pairs[mid].sum())
+        return mid+1;
+      else
+        return -1;
     }
 
     private static class Pair implements Comparable {
