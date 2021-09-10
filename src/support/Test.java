@@ -25,12 +25,20 @@ public class Test {
             );
     }
 
+
     public static void assertLessThanOrEqual(int actual, int expected) {
-        assert actual <= expected :
+        assertLessThanOrEqual(
+            actual,
+            expected,
             String.format(
-                "Expected %s to be less than or equal to %s, but it wasn't.",
+                "expected %s to be less than or equal to %s, but it wasn't.",
                 actual,
                 expected
-            );
+            )
+        );
+    }
+
+    public static void assertLessThanOrEqual(int actual, int expected, String message) {
+        assert actual <= expected : message;
     }
 }
