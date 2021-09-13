@@ -37,14 +37,14 @@ public class Exercise25 {
         private static void runExperiment(int N, int F) {
             EggThrowExperiment experiment = new EggThrowExperiment(N, F);
             int actualF = experiment.maxSafeThrowHeight();
-            int maxThrows = (int) (4 * Math.sqrt(F));
+            int maxThrows = (int) (2 * Math.sqrt(N));
             int expectedThrows = expectedThrows(N, F);
             int actualThrows = experiment.eggThrows;
 
             try {
                 Test.assertLessThanOrEqual(actualF, F, "expected F to be " + F + " but it was " + actualF);
-                Test.assertLessThanOrEqual(actualThrows, maxThrows, "expected throws to be less than or equal to " + maxThrows + " they were " + actualThrows);
                 Test.assertLessThanOrEqual(actualThrows, expectedThrows, "expected throws to be " + expectedThrows + " they were " + actualThrows);
+                Test.assertLessThanOrEqual(actualThrows, maxThrows, "expected throws to be less than or equal to " + maxThrows + " they were " + actualThrows);
             } catch (AssertionError e) {
                 StdOut.printf(
                     "Experiment failed for N=%s, F=%s, expected max throws: %s, actual throws: %s\n",
@@ -58,11 +58,20 @@ public class Exercise25 {
         private static int expectedThrows(int N, int F) {
             int ti = TriangularNumber.indexOfTriangularNumberEqualToOrGreaterThan(N);
             int l = TriangularNumber.layerFromBottomFor(F, ti);
-            return l + Math.min(F - TriangularNumber.partialSumForLayersUpTo(l-1, ti), TriangularNumber.numberCountForLayer(l, ti)-1);
+            return l + Math.min(
+                F - TriangularNumber.partialNumberCountForLayersUpTo(l-1, ti),
+                TriangularNumber.numberCountForLayer(l, ti)-1
+            );
         }
     }
 
     // Note: Floors are 1 indexed. I.e: first floor is 1, not 0.
+    // Note 2: This solution does not have O(~sqrt(F)) complexity, despite it being so popular in the internet. It does not satisfy part 2 of the problem.
+    // It still has O(~sqrt(N)) complexity, but it equalizes the required number of throws so the maximum required number is the same for any F.
+    //
+    // The worst case complexity is equal to the width of the base layer in -also the index of- the chosen triangular number:
+    //
+    //     MAX THROWS = ceil(sqrt(2N + 1/4) - 1/2)
     private static class EggThrowExperiment {
         public int eggsLeft;
         public int eggThrows;
@@ -110,9 +119,9 @@ public class Exercise25 {
         }
     }
 
-    // ti stands for "triangular number index", which happens to be the same as the length of the biggest row in any triangular number
+    // ti stands for "triangular number index", which happens to be the same as the length of the biggest row in any triangular number.
     private static class TriangularNumber {
-        // 1 indexed. E.g: 1st = 1, 2nd = 3, 3rd = 6, 4th = 10, 5th = 15, and so on.
+        // 1 indexed. E.g: 1st = 1, 2nd = 1+2 = 3, 3rd = 1+2+3 = 6, 4th = 1+2+3+4 = 10, and so on
         public static int indexOfTriangularNumberEqualToOrGreaterThan(int x) {
             return (int) Math.ceil(indexOfTriangularNumberEqualTo(x));
         }
@@ -121,15 +130,11 @@ public class Exercise25 {
             return Math.sqrt(2 * x + 1/4.0) - 1/2.0;
         }
 
-        private static int triangularNumberAtIndex(int i) {
-            return (int) ((Math.pow(i, 2) + i) / 2.0);
-        }
-
         public static int layerFromBottomFor(int x, int ti) {
             return (int) Math.ceil(ti + 1/2.0 - Math.sqrt(Math.pow(ti + 1/2.0, 2) - 2*x));
         }
 
-        public static int partialSumForLayersUpTo(int layer, int ti) {
+        public static int partialNumberCountForLayersUpTo(int layer, int ti) {
             return (int) (layer * ti - Math.pow(layer, 2) / 2.0 + layer / 2.0);
         }
 
