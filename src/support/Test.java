@@ -3,6 +3,11 @@ package algsex.support;
 import java.util.Arrays;
 
 public class Test {
+    public static void assertEqual(int actual, int expected) {
+        assert actual == expected :
+          String.format("Expected %s, but got %s", expected, actual);
+    }
+
     public static void assertEqual(Object actual, Object expected) {
         assert actual == expected :
           String.format("Expected %s, but got %s", expected, actual);
