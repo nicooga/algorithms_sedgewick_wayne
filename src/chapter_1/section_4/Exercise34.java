@@ -13,10 +13,18 @@ public class Exercise34 {
     public static void main(String[] args) {
         int N = 1000;
 
-        for (int i = 0; i < 100; i++) {
-            int secretInt = StdRandom.uniform(1, N+1);
-            Test.assertEqual(HotColdV1.guess(secretInt, N), secretInt);
-        }
+        // for (int i = 0; i < 100; i++) {
+        //     int secretInt = StdRandom.uniform(1, N+1);
+        //     Test.assertEqual(HotColdV1.guess(secretInt, N), secretInt);
+        // }
+
+        // for (int i = 0; i < 100; i++) {
+        //     Player p = Player.withRandomAnswerUpto(N);
+        //     Test.assertEqual(HotColdV2.guess(p, N), p.secretNumber);
+        // }
+
+        Player p = new Player(2);
+        Test.assertEqual(HotColdV2.guess(p, N), p.secretNumber);
 
         StdOut.println("Tests passed");
     }
@@ -37,6 +45,59 @@ public class Exercise34 {
 
             if (guessDistance < nextGuessDistance) return guess(secretInt, lo, guess-1);
             else return guess(secretInt, guess+2, hi);
+        }
+    }
+
+    private static class HotColdV2 {
+        public static int guess(Player p, int N) {
+            return guess(p, 1, N);
+        }
+
+        private static int guess(Player p, int lo, int hi) {
+            int mid = (lo + hi) / 2;
+
+            p.askAbout(mid);
+
+            switch (p.askAbout(mid+1)) {
+                case CORRECT: return mid;
+                case HOT: return guess(p, mid+2, hi);
+                case COLD: return guess(p, lo, mid-1);
+            }
+
+            throw new RuntimeException("This should not have happened");
+        }
+    }
+
+    private enum GuessAnswer { UNKNOWN, HOT, COLD, CORRECT }
+
+    private static class Player {
+        public final int secretNumber;
+        private int lastGuess = -1;
+
+        public static Player withRandomAnswerUpto(int N) {
+            return new Player(StdRandom.uniform(1, N+1));
+        }
+
+        public Player(int secretNumber) {
+            this.secretNumber = secretNumber;
+        }
+
+        public GuessAnswer askAbout(int guess) {
+            GuessAnswer result = GuessAnswer.UNKNOWN;
+
+            if (guess == secretNumber) result = GuessAnswer.CORRECT;
+
+            if (lastGuess != -1) {
+                int guessDistance = Math.abs(guess - secretNumber);
+                int lastGuessDistance = Math.abs(lastGuess - secretNumber);
+
+                if (guessDistance < lastGuessDistance) result = GuessAnswer.HOT;
+                else result = GuessAnswer.COLD;
+            }
+
+            lastGuess = guess;
+
+            return result;
         }
     }
 }
