@@ -13,36 +13,34 @@ public class Exercise34 {
     public static void main(String[] _args) {
         int N = 1000;
 
-        for (int i = 0; i < 100; i++) {
-            Player p = Player.withRandomAnswerWithinOneAnd(N);
+        for (int i = 0; i < 10000; i++) {
+            Player p = Player.withRandomAnswerWithinTwoAnd(N);
             Test.assertEqual(HotColdV1.guess(p, N), p.secretNumber);
+            Test.assertLessThanOrEqual(p.guessCount, (int) (2 * lg(N)));
         }
 
-        for (int i = 0; i < 100; i++) {
-            Player p = Player.withRandomAnswerWithinOneAnd(N);
+        for (int i = 0; i < 10000; i++) {
+            Player p = Player.withRandomAnswerWithinTwoAnd(N);
+            double maxP = Math.ceil(lg(4*p.secretNumber/3));
+            double maxGuesses = maxP + 1 + 2 * lg(Math.pow(2, maxP - 1));
 
-            try {
-                Test.assertEqual(HotColdV2.guess(p, N), p.secretNumber);
-            } catch (Throwable e) {
-                StdOut.println(p.secretNumber);
-                throw e;
-            }
+            Test.assertEqual(HotColdV2.guess(p), p.secretNumber);
+            Test.assertLessThanOrEqual(p.guessCount, (int) (maxGuesses));
         }
 
         StdOut.println("Tests passed");
     }
 
-    private static class HotColdV1 {
-        // private static int loopCount; // debug
+    private static double lg(double x) {
+        return Math.log(x) / Math.log(2);
+    }
 
+    private static class HotColdV1 {
         public static int guess(Player p, int N) {
             return guess(p, 1, N);
         }
 
         public static int guess(Player p, int lo, int hi) {
-            // loopCount++; // debug
-            // if (loopCount > Math.log(1000) / Math.log(2)) throw new RuntimeException("Too deep"); // debug
-
             int mid = (lo + hi) / 2;
 
             if (p.guess(mid) == GuessAnswer.CORRECT) return mid;
@@ -57,8 +55,9 @@ public class Exercise34 {
         }
     }
 
+    // AFAIU, this algorithm has better complexity than ~ 2 lg N, but it is still not ~ 1 lg N.
     private static class HotColdV2 {
-        public static int guess(Player p, int N) {
+        public static int guess(Player p) {
             int lo = 1;
             int hi = 2;
 
@@ -67,38 +66,15 @@ public class Exercise34 {
             GuessAnswer answer = p.guess(hi);
 
             while (answer == GuessAnswer.HOT) {
-                int temp = hi;
-                // hi = Math.min(hi*2, N);
+                lo *= 2;
                 hi *= 2;
-                lo = temp;
-
-                StdOut.println("=====");
-                StdOut.println("lo: " + lo);
-                StdOut.println("hi: " + hi);
-
                 answer = p.guess(hi);
             }
 
-            StdOut.println("Finished looping: " + answer);
-
             switch (answer) {
                 case CORRECT: return hi;
-                case EQUALLY_APART: {
-                    // StdOut.println("Guesses were equally apart");
-                    return (lo + hi) / 2;
-                }
-                case COLD: {
-                    // StdOut.println("=====");
-                    // StdOut.println("lo: " + lo);
-                    // StdOut.println("hi: " + hi);
-                    return HotColdV1.guess(p, (3*lo)/4, (lo+hi)/2);
-                }
-                case HOT: {
-                    // StdOut.println("=====");
-                    // StdOut.println("lo: " + lo);
-                    // StdOut.println("hi: " + hi);
-                    return HotColdV1.guess(p, (lo+hi)/2, hi);
-                }
+                case EQUALLY_APART: return (lo + hi) / 2;
+                case COLD: return HotColdV1.guess(p, (3*lo)/4, (lo+hi)/2);
                 default: throw new RuntimeException("This statement should not have been reached");
             }
         }
@@ -108,11 +84,11 @@ public class Exercise34 {
 
     private static class Player {
         public final int secretNumber;
-        public int guesses = 0;
+        public int guessCount = 0;
         private int lastGuess = -1;
 
-        public static Player withRandomAnswerWithinOneAnd(int N) {
-            return new Player(StdRandom.uniform(1, N+1));
+        public static Player withRandomAnswerWithinTwoAnd(int N) {
+            return new Player(StdRandom.uniform(2, N+1));
         }
 
         public Player(int secretNumber) {
@@ -132,10 +108,8 @@ public class Exercise34 {
                 else result = GuessAnswer.EQUALLY_APART;
             }
 
-            // StdOut.printf("Guessing %s, given last guess %s: %s\n", guess, lastGuess, result);
-
             lastGuess = guess;
-            guesses++;
+            guessCount++;
 
             return result;
         }
