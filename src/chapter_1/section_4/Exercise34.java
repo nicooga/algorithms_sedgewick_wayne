@@ -10,71 +10,108 @@ import algsex.support.Test;
 // rithm that finds the secret number in at most ~2 lg N guesses. Then design an algorithm
 // that finds the secret number in at most ~ 1 lg N guesses.
 public class Exercise34 {
-    public static void main(String[] args) {
+    public static void main(String[] _args) {
         int N = 1000;
 
-        // for (int i = 0; i < 100; i++) {
-        //     int secretInt = StdRandom.uniform(1, N+1);
-        //     Test.assertEqual(HotColdV1.guess(secretInt, N), secretInt);
-        // }
+        for (int i = 0; i < 100; i++) {
+            Player p = Player.withRandomAnswerWithinOneAnd(N);
+            Test.assertEqual(HotColdV1.guess(p, N), p.secretNumber);
+        }
 
-        // for (int i = 0; i < 100; i++) {
-        //     Player p = Player.withRandomAnswerUpto(N);
-        //     Test.assertEqual(HotColdV2.guess(p, N), p.secretNumber);
-        // }
+        for (int i = 0; i < 100; i++) {
+            Player p = Player.withRandomAnswerWithinOneAnd(N);
 
-        Player p = new Player(2);
-        Test.assertEqual(HotColdV2.guess(p, N), p.secretNumber);
+            try {
+                Test.assertEqual(HotColdV2.guess(p, N), p.secretNumber);
+            } catch (Throwable e) {
+                StdOut.println(p.secretNumber);
+                throw e;
+            }
+        }
 
         StdOut.println("Tests passed");
     }
 
     private static class HotColdV1 {
-        public static int guess(int secretInt, int N) {
-            return guess(secretInt, 1, N);
+        // private static int loopCount; // debug
+
+        public static int guess(Player p, int N) {
+            return guess(p, 1, N);
         }
 
-        private static int guess(int secretInt, int lo, int hi) {
-            int guess = (lo + hi) / 2;
+        public static int guess(Player p, int lo, int hi) {
+            // loopCount++; // debug
+            // if (loopCount > Math.log(1000) / Math.log(2)) throw new RuntimeException("Too deep"); // debug
 
-            if (guess == secretInt) return guess;
-            if (guess+1 == secretInt) return guess+1;
+            int mid = (lo + hi) / 2;
 
-            int guessDistance = Math.abs(guess - secretInt);
-            int nextGuessDistance = Math.abs(guess+1 - secretInt);
+            if (p.guess(mid) == GuessAnswer.CORRECT) return mid;
 
-            if (guessDistance < nextGuessDistance) return guess(secretInt, lo, guess-1);
-            else return guess(secretInt, guess+2, hi);
+            switch (p.guess(mid+1)) {
+                case CORRECT: return mid+1;
+                case HOT: return guess(p, mid+2, hi);
+                case COLD: return guess(p, lo, mid-1);
+            }
+
+            throw new RuntimeException("This statement should not have been reached");
         }
     }
 
     private static class HotColdV2 {
         public static int guess(Player p, int N) {
-            return guess(p, 1, N);
-        }
+            int lo = 1;
+            int hi = 2;
 
-        private static int guess(Player p, int lo, int hi) {
-            int mid = (lo + hi) / 2;
+            if (p.guess(lo) == GuessAnswer.CORRECT) return lo;
 
-            p.askAbout(mid);
+            GuessAnswer answer = p.guess(hi);
 
-            switch (p.askAbout(mid+1)) {
-                case CORRECT: return mid;
-                case HOT: return guess(p, mid+2, hi);
-                case COLD: return guess(p, lo, mid-1);
+            while (answer == GuessAnswer.HOT) {
+                int temp = hi;
+                // hi = Math.min(hi*2, N);
+                hi *= 2;
+                lo = temp;
+
+                StdOut.println("=====");
+                StdOut.println("lo: " + lo);
+                StdOut.println("hi: " + hi);
+
+                answer = p.guess(hi);
             }
 
-            throw new RuntimeException("This should not have happened");
+            StdOut.println("Finished looping: " + answer);
+
+            switch (answer) {
+                case CORRECT: return hi;
+                case EQUALLY_APART: {
+                    // StdOut.println("Guesses were equally apart");
+                    return (lo + hi) / 2;
+                }
+                case COLD: {
+                    // StdOut.println("=====");
+                    // StdOut.println("lo: " + lo);
+                    // StdOut.println("hi: " + hi);
+                    return HotColdV1.guess(p, (3*lo)/4, (lo+hi)/2);
+                }
+                case HOT: {
+                    // StdOut.println("=====");
+                    // StdOut.println("lo: " + lo);
+                    // StdOut.println("hi: " + hi);
+                    return HotColdV1.guess(p, (lo+hi)/2, hi);
+                }
+                default: throw new RuntimeException("This statement should not have been reached");
+            }
         }
     }
 
-    private enum GuessAnswer { UNKNOWN, HOT, COLD, CORRECT }
+    private enum GuessAnswer { UNKNOWN, CORRECT, HOT, COLD, EQUALLY_APART }
 
     private static class Player {
         public final int secretNumber;
+        public int guesses = 0;
         private int lastGuess = -1;
 
-        public static Player withRandomAnswerUpto(int N) {
+        public static Player withRandomAnswerWithinOneAnd(int N) {
             return new Player(StdRandom.uniform(1, N+1));
         }
 
@@ -82,20 +119,23 @@ public class Exercise34 {
             this.secretNumber = secretNumber;
         }
 
-        public GuessAnswer askAbout(int guess) {
+        public GuessAnswer guess(int guess) {
             GuessAnswer result = GuessAnswer.UNKNOWN;
 
             if (guess == secretNumber) result = GuessAnswer.CORRECT;
-
-            if (lastGuess != -1) {
+            else if (lastGuess != -1) {
                 int guessDistance = Math.abs(guess - secretNumber);
                 int lastGuessDistance = Math.abs(lastGuess - secretNumber);
 
                 if (guessDistance < lastGuessDistance) result = GuessAnswer.HOT;
-                else result = GuessAnswer.COLD;
+                else if (guessDistance > lastGuessDistance) result = GuessAnswer.COLD;
+                else result = GuessAnswer.EQUALLY_APART;
             }
 
+            // StdOut.printf("Guessing %s, given last guess %s: %s\n", guess, lastGuess, result);
+
             lastGuess = guess;
+            guesses++;
 
             return result;
         }
