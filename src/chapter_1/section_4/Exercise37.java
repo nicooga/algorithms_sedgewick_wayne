@@ -2,7 +2,7 @@ package algsex.chapter1.section4;
 
 import java.util.*;
 import edu.princeton.cs.algs4.StdOut;
-import edu.princeton.cs.algs4.Stopwatch;
+import algsex.support.DoublingRatioExperiment;
 
 // 1.4.37 Autoboxing performance penalty. Run experiments to determine the perfor-
 // mance penalty on your machine for using autoboxing and auto-unboxing. Develop an
@@ -20,44 +20,31 @@ public class Exercise37 {
     public static void main(String[] args) {
         while (true) {
             StdOut.println("ratios for normal stack (N, time, ratio): ");
-            new NormalStackDoublingRationExperiment().run();
+            new NormalStackDoublingRatioExperiment().run();
             StdOut.println("ratios for generic stack (N, time, ratio): ");
             new GenericStackDoublingRatioExperiment().run();
         }
     }
 
-    private static class NormalStackDoublingRationExperiment extends DoublingRatioExperiment {
+    private static class NormalStackDoublingRatioExperiment extends StackDoublingRatioExperiment {
         protected Stack<String> instantiateStack(int N) {
             return new FixedCapacityStackOfStrings(N);
         }
     }
 
-    private static class GenericStackDoublingRatioExperiment extends DoublingRatioExperiment {
+    private static class GenericStackDoublingRatioExperiment extends StackDoublingRatioExperiment {
         protected Stack<String> instantiateStack(int N) {
             return new FixedCapacityStack<String>(N);
         }
     }
 
-    private abstract static class DoublingRatioExperiment {
-        public void run() {
-            double prevTime = runTimeTrial(1);
-
-            for (int N = 2; N > 0; N *= 2) {
-                double time = runTimeTrial(N);
-                double ratio = time/prevTime;
-                StdOut.printf("%d %5.1f %5.1f\n", N, time, ratio);
-                prevTime = time;
-            }
-        }
-
-        private double runTimeTrial(int N) {
-            Stopwatch timer = new Stopwatch();
+    private static abstract class StackDoublingRatioExperiment extends DoublingRatioExperiment {
+        protected void doRunExperiment(int N) {
             Stack<String> s = instantiateStack(N);
             for (int i = 0; i < N; i++) s.push("some string");
-            return timer.elapsedTime();
         }
 
-        protected abstract Stack<String> instantiateStack(int N);
+        abstract protected Stack<String> instantiateStack(int N);
     }
 
     private static class FixedCapacityStack<T> implements Stack<T> {
