@@ -9,53 +9,58 @@ import edu.princeton.cs.algs4.Stopwatch;
 // implementation FixedCapacityStackOfInts and use a client such as DoublingRatio
 // to compare its performance with the generic FixedCapacityStack<Integer>, for a
 // large number of push() and pop() operations.
+
+// Tested with:
+// openjdk version "17" 2021-09-14
+// OpenJDK Runtime Environment (build 17+35-2724)
+// OpenJDK 64-Bit Server VM (build 17+35-2724, mixed mode, sharing)
+//
+// Conclusions: usage of generics incurs in an small -sometimes unnoticeable- but consistent overhead.
 public class Exercise37 {
     public static void main(String[] args) {
-        runDoublingRatioTestForNormalStack();
-        runDoublingRatioTestForGenericStack();
-    }
-
-    private static void runDoublingRatioTestForNormalStack() {
-        StdOut.println("ratios for normal stack: ");
-
-        double prevTime = runTimeTrialForNormalStack(1);
-
-        for (int N = 2; N > 0; N *= 2) {
-            double time = runTimeTrialForNormalStack(N);
-            double ratio = time/prevTime;
-            StdOut.printf("doubling ratio: %5.1f\n", ratio);
-            prevTime = time;
+        while (true) {
+            StdOut.println("ratios for normal stack (N, time, ratio): ");
+            new NormalStackDoublingRationExperiment().run();
+            StdOut.println("ratios for generic stack (N, time, ratio): ");
+            new GenericStackDoublingRatioExperiment().run();
         }
     }
 
-    private static double runTimeTrialForNormalStack(int N) {
-        Stopwatch timer = new Stopwatch();
-        FixedCapacityStackOfStrings s = new FixedCapacityStackOfStrings(N);
-        for (int i = 0; i < N; i++) s.push("some string");
-        return timer.elapsedTime();
-    }
-
-    private static void runDoublingRatioTestForGenericStack() {
-        StdOut.println("ratios for generic stack: ");
-
-        double prevTime = runTimeTrialForGenericStack(1);
-
-        for (int N = 2; N > 0; N *= 2) {
-            double time = runTimeTrialForGenericStack(N);
-            double ratio = time/prevTime;
-            StdOut.printf("%5.1f\n", ratio);
-            prevTime = time;
+    private static class NormalStackDoublingRationExperiment extends DoublingRatioExperiment {
+        protected Stack<String> instantiateStack(int N) {
+            return new FixedCapacityStackOfStrings(N);
         }
     }
 
-    private static double runTimeTrialForGenericStack(int N) {
-        Stopwatch timer = new Stopwatch();
-        FixedCapacityStack<String> s = new FixedCapacityStack<>(N);
-        for (int i = 0; i < N; i++) s.push("some string");
-        return timer.elapsedTime();
+    private static class GenericStackDoublingRatioExperiment extends DoublingRatioExperiment {
+        protected Stack<String> instantiateStack(int N) {
+            return new FixedCapacityStack<String>(N);
+        }
     }
 
-    private static class FixedCapacityStack<T> {
+    private abstract static class DoublingRatioExperiment {
+        public void run() {
+            double prevTime = runTimeTrial(1);
+
+            for (int N = 2; N > 0; N *= 2) {
+                double time = runTimeTrial(N);
+                double ratio = time/prevTime;
+                StdOut.printf("%d %5.1f %5.1f\n", N, time, ratio);
+                prevTime = time;
+            }
+        }
+
+        private double runTimeTrial(int N) {
+            Stopwatch timer = new Stopwatch();
+            Stack<String> s = instantiateStack(N);
+            for (int i = 0; i < N; i++) s.push("some string");
+            return timer.elapsedTime();
+        }
+
+        protected abstract Stack<String> instantiateStack(int N);
+    }
+
+    private static class FixedCapacityStack<T> implements Stack<T> {
         private final T[] a;
         private int N;
 
@@ -80,7 +85,7 @@ public class Exercise37 {
         }
     }
 
-    private static class FixedCapacityStackOfStrings {
+    private static class FixedCapacityStackOfStrings implements Stack<String> {
         private final String[] a;
         private int N;
 
@@ -103,5 +108,9 @@ public class Exercise37 {
         public String pop() {
             return a[--N];
         }
+    }
+
+    private interface Stack<T> {
+        public void push(T item); 
     }
 }
