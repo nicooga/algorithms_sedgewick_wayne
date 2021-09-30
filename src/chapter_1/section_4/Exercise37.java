@@ -19,20 +19,26 @@ import algsex.support.DoublingRatioExperiment;
 public class Exercise37 {
     public static void main(String[] args) {
         while (true) {
-            StdOut.println("ratios for normal stack (N, time, ratio): ");
             new NormalStackDoublingRatioExperiment().run();
-            StdOut.println("ratios for generic stack (N, time, ratio): ");
             new GenericStackDoublingRatioExperiment().run();
         }
     }
 
     private static class NormalStackDoublingRatioExperiment extends StackDoublingRatioExperiment {
+        protected String label() {
+            return "ratios for normal stack (N, time, ratio)";
+        }
+
         protected Stack<String> instantiateStack(int N) {
             return new FixedCapacityStackOfStrings(N);
         }
     }
 
     private static class GenericStackDoublingRatioExperiment extends StackDoublingRatioExperiment {
+        protected String label() {
+            return "ratios for generic stack (N, time, ratio)";
+        }
+
         protected Stack<String> instantiateStack(int N) {
             return new FixedCapacityStack<String>(N);
         }
