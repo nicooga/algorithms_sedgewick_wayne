@@ -54,16 +54,14 @@ import algsex.support.DoublingRatioExperiment;
 // 8192 167.6   9.1
 // 16384 1360.9   8.1
 public class Exercise38 {
-    private static int MAX_N_SIZE = 4096;
+    public static int MAX_N_SIZE = 4096;
 
     public static void main(String[] args) {
         int[] a = new int[] { 1, 0, -1 };
         assert NaiveThreeSum.count(a) == 1;
         assert FastThreeSum.count(a) == 1;
 
-        // Prime the data generator, so data geration time does not affect experiment.
-        for (int N = 2; N <= MAX_N_SIZE; N *= 2)
-            TestDataGenerator.getOrCreateTestData(N);
+        primeTestDataGenerator();
 
         while (true) {
             new FastThreeSumExperiment().run();
@@ -71,7 +69,12 @@ public class Exercise38 {
         }
     }
 
-    private static class NaiveThreeSumExperiment extends Experiment {
+    public static void primeTestDataGenerator() {
+        for (int N = 2; N <= MAX_N_SIZE; N *= 2)
+            TestDataGenerator.getOrCreateTestData(N);
+    }
+
+    public static class NaiveThreeSumExperiment extends Experiment {
         protected String label() { return "Naive ThreeSum"; }
 
         protected void doDoRunExperiment(int[] a) {
@@ -79,7 +82,7 @@ public class Exercise38 {
         }
     }
 
-    private static class FastThreeSumExperiment extends Experiment {
+    public static class FastThreeSumExperiment extends Experiment {
         protected String label() { return "Fast ThreeSum"; }
 
         protected void doDoRunExperiment(int[] a) {
@@ -101,7 +104,7 @@ public class Exercise38 {
     }
 
     // Generates and serves test data, ensuring we use the same data for all tests.
-    private static class TestDataGenerator {
+    public static class TestDataGenerator {
         private static Map<Integer, Integer[]> cache = new HashMap<>();
 
         public static int[] getOrCreateTestData(int N) {
