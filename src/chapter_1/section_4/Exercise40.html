@@ -1,0 +1,191 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: wheat;
+                font-family: monospace;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                padding: 120px 0;
+            }
+
+            .main-container {
+                width: 1000px;
+            }
+
+            em {
+                font-family: serif;
+                font-weight: bold;
+            }
+
+            thead, td:first-child {
+                background-color: maroon;
+                color: wheat;
+            }
+
+            td {
+                text-align: center;
+            }
+
+            .valid-pair {
+                background-color: tomato;
+            }
+
+            .cell {
+                width: 30px;
+            }
+
+            p {
+                white-space: pre-wrap;
+            }
+
+            pre {
+                margin: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-container">
+            <pre class="md">
+*1.4.40 3-sum for random value*. Formulate and validate a hypothesis describing the number of triples of N random int values that sum to *0*.  
+If you are skilled in mathematical analysis, develop an appropriate mathematical model for this problem, where the values are uniformly distributed between *–M* and *M*, where M is not small.
+
+---
+
+### Some considerations and basic facts
+
+For conveniency, I'll call pairs and triples that sum to *0* "balanced" pairs and triples.
+
+#### Minimum amount of valid triples
+
+We have a list of integers *X* of length *N*. All these integers are evenly distributed within the interval *[-M, M]*.
+
+Even so, there is a chance that all the integers are 1, for instance: *X = { 1, 1, 1, ..., 1 }*.
+In this case we would have no triples that sum to *0*.
+This shows that the minimum amount of triples that sum to *0* within an *N* list of integers is *0*.
+
+#### Maximum amount of triples
+
+WIP
+
+### The probabilities
+
+The table shows the possibles sums for a pair *(a, b)*, where a and b are integers within the interval *[-M, M]*.  
+Highlighted values show pairs whose sum is also within the interval *[-M, M]*.  
+            </pre>
+
+            <form id="form">
+                <label>value for M: </label>
+                <input id="M-input" type="number" value="10"  min="0" max="150" />
+                <input type="submit" value="Draw table" />
+            </form>
+
+            <pre class="md">
+If this is true, then if we generate a list of *N* integers evenly distributed across the interval *[-M, M]* we should find aproximately balanced triples that list.
+Let's try that.
+            </pre>
+
+            <div id="table-holder" />
+        </div>
+
+        <script
+            src="https://cdnjs.cloudflare.com/ajax/libs/marked/3.0.4/marked.min.js"
+            integrity="sha512-a+W0h6Sho4fGYABZAQg6zdWP/qtyE+gzeVfNB/UApXRLuHKh7bT3TeA/LUOno+pcDjX0Vfzgtz6crFQC3YL9lA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"
+        ></script>
+
+        <script>
+            const PairsTable = {
+                drawPairsTable(M) {
+                    const table = this.buildTable(M);
+                    document.getElementById("table-holder").replaceChildren(table);
+                },
+
+                buildTable(M) {
+                    const table = this.el("table");
+                    const thead = this.buildTableHeader(M);
+                    this.appendTableRows(table, M);
+                    table.append(thead);
+                    return table;
+                },
+
+                appendTableRows(table, M) {
+                    for (let i = -M; i <= M; i++) {
+                        const tr = this.el("tr");
+
+                        tr.append(this.cell("td", i));
+
+                        for (let j = -M; j <= M; j++) {
+                            const sum = i + j;
+                            const td = this.cell("td", sum);
+                            if (sum >= -M && sum <= M) td.className = "valid-pair";
+                            tr.append(td);
+                        }
+
+                        table.append(tr);
+                    }
+                },
+
+                buildTableHeader(M) {
+                    const thead = this.el("thead");
+                    const header = this.el("tr");
+
+                    header.append(this.cell("th"));
+
+                    for (let i = -M; i <= M; i++) header.append(this.cell("th", i));
+
+                    thead.append(header);
+
+                    return thead;
+                },
+
+                cell(elementName, contents = "") {
+                    const wrappedContents = this.el("div", contents, { className: "cell" });
+                    return this.el(elementName, wrappedContents);
+                },
+
+                el(elementName, contents = "", { className = ""} = {}) {
+                    const element = document.createElement(elementName);
+
+                    element.className = className;
+
+                    if (typeof contents === "string" || typeof contents === "number") {
+                        element.innerText = contents;
+                    } else if (typeof contents === "object") {
+                        element.appendChild(contents);
+                    } else {
+                        throw "error, unexpected " + typeof contents;
+                    }
+
+                    return element;
+                }
+            };
+
+            main();
+
+            function main() {
+                const form = document.getElementById("form");
+
+                form.addEventListener("submit", (ev) => {
+                    ev.preventDefault();
+                    const M = document.getElementById("M-input").value;
+                    PairsTable.drawPairsTable(M);
+                });
+
+                form.querySelector("input").focus();
+
+                PairsTable.drawPairsTable(5);
+
+                renderMarkdown();
+            }
+
+            function renderMarkdown() {
+                document.querySelectorAll(".md").forEach(el => {
+                    el.innerHTML = marked(el.innerText);
+                });
+            }
+        </script>
+    </body>
+</html>
