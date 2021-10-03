@@ -43,6 +43,10 @@
             pre {
                 margin: 0;
             }
+
+            .table-holder {
+                overflow: auto;
+            }
         </style>
     </head>
     <body>
@@ -53,9 +57,10 @@ If you are skilled in mathematical analysis, develop an appropriate mathematical
 
 ---
 
-### Some considerations and basic facts
+### Some considerations and facts
 
-For conveniency, I'll call pairs and triples that sum to *0* "balanced" pairs and triples.
+For conveniency, I'll call pairs and triples that sum to *0* "balanced" triples.
+Since balancing triples come from a pair whose sum is within the interval *[-M, M]*, I'll call these pairs "balanced" pairs too.
 
 #### Minimum amount of valid triples
 
@@ -81,12 +86,20 @@ Highlighted values show pairs whose sum is also within the interval *[-M, M]*.
                 <input type="submit" value="Draw table" />
             </form>
 
-            <pre class="md">
-If this is true, then if we generate a list of *N* integers evenly distributed across the interval *[-M, M]* we should find aproximately balanced triples that list.
-Let's try that.
-            </pre>
+            <div class="table-holder" id="table-holder"></div>
 
-            <div id="table-holder" />
+            <pre class="md">
+The total possible pairs are *(2M + 1)^2 = 4M^2 + 4M + 1*.
+The numbers that do not sum to a number within the interval *[-M, M]* form a rectangle of width *M(M + 1) = M^2 + M*.
+This shows that the probability of a pair to be balanced is *3M^2 + 3M + 1 / (2M + 1)^2*.
+
+### The number of balanced pairs within a list
+
+Within a list of length *N* there is going to be *N^2/2 - N/2* pairs.  
+Given the probabilities of a pair to be balanced, we should find aproximately *(N^2/2 - N/2) * (3M^2 + 3M + 1) / (2M + 1)^2* pairs within that list.
+
+For instance, given *M = 50* and *N = 1000*, we should find around *374,637* balanced pairs.
+            </pre>
         </div>
 
         <script
@@ -98,14 +111,14 @@ Let's try that.
 
         <script>
             const PairsTable = {
-                drawPairsTable(M) {
-                    const table = this.buildTable(M);
+                draw(M) {
+                    const table = this._buildTable(M);
                     document.getElementById("table-holder").replaceChildren(table);
                 },
 
-                buildTable(M) {
+                _buildTable(M) {
                     const table = this.el("table");
-                    const thead = this.buildTableHeader(M);
+                    const thead = this._buildTableHeader(M);
                     this.appendTableRows(table, M);
                     table.append(thead);
                     return table;
@@ -128,7 +141,7 @@ Let's try that.
                     }
                 },
 
-                buildTableHeader(M) {
+                _buildTableHeader(M) {
                     const thead = this.el("thead");
                     const header = this.el("tr");
 
@@ -171,20 +184,65 @@ Let's try that.
                 form.addEventListener("submit", (ev) => {
                     ev.preventDefault();
                     const M = document.getElementById("M-input").value;
-                    PairsTable.drawPairsTable(M);
+                    PairsTable.draw(M);
                 });
 
                 form.querySelector("input").focus();
 
-                PairsTable.drawPairsTable(5);
+                PairsTable.draw(5);
 
                 renderMarkdown();
+
+                const M = 50;
+                let a = 0;
+
+                for (let i = 0; i < 1000; i++) {
+                    const list = generateRandomIntegerList(1000, M);
+                    a += countBalancedPairs(list, M);
+                }
+
+                console.log(a / 1000);
             }
 
             function renderMarkdown() {
                 document.querySelectorAll(".md").forEach(el => {
                     el.innerHTML = marked(el.innerText);
                 });
+            }
+
+            function generateRandomIntegerList(N, M) {
+                const list = [];
+                for (let i = 0; i < N; i++) list[i] = randomInteger(M);
+                return list;
+            }
+
+            function randomInteger(M) {
+                return Math.floor((Math.random() * (2*M + 1)) -M);
+            }
+
+            function countBalancedPairs(a, M) {
+                const N = a.length;
+                let count = 0;
+
+                for (let i = 0; i < N; i++)
+                    for (let j = i+1; j < N; j++) {
+                        const sum = a[i] + a[j];
+                        if (sum >= -M && sum <= M) count++;
+                    }
+
+                return count;
+            }
+
+            function countBalancingTriples(a) {
+                const N = a.length;
+                let count = 0;
+
+                for (let i = 0; i < N; i++)
+                    for (let j = i+1; j < N; j++)
+                        for (let k = j+1; k < N; k++)
+                            if (a[i] + a[j] + a[k] === 0) count++;
+
+                return count;
             }
         </script>
     </body>
