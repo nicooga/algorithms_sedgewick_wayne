@@ -59,10 +59,18 @@ If you are skilled in mathematical analysis, develop an appropriate mathematical
 
 ### Some considerations and facts
 
-For conveniency, I'll call pairs and triples that sum to *0* "balanced" triples.
-Since balancing triples come from a pair whose sum is within the interval *[-M, M]*, I'll call these pairs "balanced" pairs too.
+For a triple *(a, b, c)* to sum to *0*, we need the pair *(a, b)* to sum to a value within the interval *[-M, M]*.  
+This happens because if *a + b + c = 0*, then *c = -(a + b)*.
+Since *a, b, c &isin; [-M, M]*, then *-(a + b) &isin; [-M, M]* must also be true.
+This applies even if we flip the *a*, *b* and *c* around.
 
-#### Minimum amount of valid triples
+For conveniency, I'll call pairs and triples that sum to *0* "balanced" triples.
+I'll call any pair that is part of balanced triple "balanced" too.
+
+So, again, a triple *(a, b, c)* is balanced if *a + b + c = 0*.  
+And a pair *(a, b)* is balanced if *-M >= a + b <= M*
+
+#### Expected amount of balanced triples
 
 We have a list of integers *X* of length *N*. All these integers are evenly distributed within the interval *[-M, M]*.
 
@@ -70,36 +78,97 @@ Even so, there is a chance that all the integers are 1, for instance: *X = { 1, 
 In this case we would have no triples that sum to *0*.
 This shows that the minimum amount of triples that sum to *0* within an *N* list of integers is *0*.
 
-#### Maximum amount of triples
+### Probability for a pair to be balanced
 
-WIP
-
-### The probabilities
-
-The table shows the possibles sums for a pair *(a, b)*, where a and b are integers within the interval *[-M, M]*.  
+The table shows the possible pairs *(a, b)*, where *a, b &isin; [-M, M]*.  
 Highlighted values show pairs whose sum is also within the interval *[-M, M]*.  
             </pre>
 
-            <form id="form">
+            <form id="pairs-table-form">
                 <label>value for M: </label>
-                <input id="M-input" type="number" value="10"  min="0" max="150" />
+                <input name="M" onchange="PairsTable.draw(this.value)" type="number" value="10"  min="0" max="150" />
                 <input type="submit" value="Draw table" />
             </form>
 
-            <div class="table-holder" id="table-holder"></div>
+            <div class="table-holder" id="pairs-table-holder"></div>
 
             <pre class="md">
 The total possible pairs are *(2M + 1)^2 = 4M^2 + 4M + 1*.
 The numbers that do not sum to a number within the interval *[-M, M]* form a rectangle of width *M(M + 1) = M^2 + M*.
 This shows that the probability of a pair to be balanced is *3M^2 + 3M + 1 / (2M + 1)^2*.
 
-### The number of balanced pairs within a list
+### Expected amount of balanced pairs within a list
 
-Within a list of length *N* there is going to be *N^2/2 - N/2* pairs.  
-Given the probabilities of a pair to be balanced, we should find aproximately *(N^2/2 - N/2) * (3M^2 + 3M + 1) / (2M + 1)^2* pairs within that list.
+Within a list of length *N* there are going to be *N^2/2 - N/2* pairs.  
+Given the probabilities of a pair to be balanced, we should find aproximately *(N^2/2 - N/2) * (3M^2 + 3M + 1) / (2M + 1)^2* balanced pairs within that list.
 
-For instance, given *M = 50* and *N = 1000*, we should find around *374,637* balanced pairs.
+Running a little simulation confirms that.
+For instance, given *N = 1000* and *M = 50*, we should find around *374,637* balanced pairs.
             </pre>
+
+            <div id="balanced-pair-simulation-root">
+                <form class="form">
+                    <label>N: </label>
+                    <input name="N" type="number" min="1" max="1000" value="1000" />
+
+                    <label>M: </label>
+                    <input name="M" type="number" min="1" max="1000" value="50" />
+
+                    <input type="submit" value="Run simulation" />
+                </form>
+
+                <strong>Expected balanced pair count:</strong> <span class="expected-count"></span>
+                <br />
+                <strong>Integer list:</strong> {<span class="integer-list"></span>}
+                <br />
+                <strong>Actual balanced pair count:</strong> <span class="actual-count"></span>
+                <br />
+                <strong>Average balanced pair count for N and M so far:</strong> <span class="average-count"></span>
+            </div>
+
+            <pre class="md">
+### Probability for a triple to be balanced
+
+The total possible triples that we can form with three numbers *a*, *b* and *c* is *(2M + 1)^3*.
+Following the same logic as with balanced pairs, we can imagine the table from before extending vertically to form a cube.
+
+A balanced triple is formed from a balanced pair *(a, b)* and a third number *c* such that *c = -(a + b)*.
+A balanced pair can be combined with any number from *-M* to *M* to form a triple, but only one particular number is going to make it a balanced triple.
+
+Conclusion: The probability for a triple to be balanced is the same as for pairs, but over *(2M + 1)^3* instead of *(2M + 1)^2*.  
+This is: *3M^2 + 3M + 1 / (2M + 1)^3*.
+
+### Expected amount of balanced triples
+
+Now that we have the probability for a triple to be balanced, we can just multiply it by the total number of triples within a list of length *N* to get the expected amount for balanced triples.
+
+Within a list of length *N* there are going to be *N^3/6 - N^2/2 + N/3* triples.
+The expected amount of balanced triples is then *(N^3/6 - N^2/2 + N/3)(3M^2 + 3M + 1)/(2M + 1)^3*.
+
+Let's confirm that.
+
+Given *N=1000* and *M=50*, we should find around  1,233,954 balanced triples.
+            </pre>
+
+            <div id="balanced-triple-simulation-root">
+                <form class="form">
+                    <label>N: </label>
+                    <input name="N" type="number" min="1" max="1000" value="1000" />
+
+                    <label>M: </label>
+                    <input name="M" type="number" min="1" max="1000" value="50" />
+
+                    <input type="submit" value="Run simulation" />
+                </form>
+
+                <strong>Expected balanced triple count:</strong> <span class="expected-count"></span>
+                <br />
+                <strong>Integer list:</strong> {<span class="integer-list"></span>}
+                <br />
+                <strong>Actual balanced triple count:</strong> <span class="actual-count"></span>
+                <br />
+                <strong>Average balanced triple count for N and M so far:</strong> <span class="average-count"></span>
+            </div>
         </div>
 
         <script
@@ -113,26 +182,26 @@ For instance, given *M = 50* and *N = 1000*, we should find around *374,637* bal
             const PairsTable = {
                 draw(M) {
                     const table = this._buildTable(M);
-                    document.getElementById("table-holder").replaceChildren(table);
+                    document.getElementById("pairs-table-holder").replaceChildren(table);
                 },
 
                 _buildTable(M) {
-                    const table = this.el("table");
+                    const table = el("table");
                     const thead = this._buildTableHeader(M);
-                    this.appendTableRows(table, M);
+                    this._appendTableRows(table, M);
                     table.append(thead);
                     return table;
                 },
 
-                appendTableRows(table, M) {
+                _appendTableRows(table, M) {
                     for (let i = -M; i <= M; i++) {
-                        const tr = this.el("tr");
+                        const tr = el("tr");
 
-                        tr.append(this.cell("td", i));
+                        tr.append(this._cell("td", i));
 
                         for (let j = -M; j <= M; j++) {
                             const sum = i + j;
-                            const td = this.cell("td", sum);
+                            const td = this._cell("td", sum);
                             if (sum >= -M && sum <= M) td.className = "valid-pair";
                             tr.append(td);
                         }
@@ -142,66 +211,152 @@ For instance, given *M = 50* and *N = 1000*, we should find around *374,637* bal
                 },
 
                 _buildTableHeader(M) {
-                    const thead = this.el("thead");
-                    const header = this.el("tr");
+                    const thead = el("thead");
+                    const header = el("tr");
 
-                    header.append(this.cell("th"));
+                    header.append(this._cell("th"));
 
-                    for (let i = -M; i <= M; i++) header.append(this.cell("th", i));
+                    for (let i = -M; i <= M; i++) header.append(this._cell("th", i));
 
                     thead.append(header);
 
                     return thead;
                 },
 
-                cell(elementName, contents = "") {
-                    const wrappedContents = this.el("div", contents, { className: "cell" });
-                    return this.el(elementName, wrappedContents);
-                },
-
-                el(elementName, contents = "", { className = ""} = {}) {
-                    const element = document.createElement(elementName);
-
-                    element.className = className;
-
-                    if (typeof contents === "string" || typeof contents === "number") {
-                        element.innerText = contents;
-                    } else if (typeof contents === "object") {
-                        element.appendChild(contents);
-                    } else {
-                        throw "error, unexpected " + typeof contents;
-                    }
-
-                    return element;
+                _cell(elementName, contents = "") {
+                    const wrappedContents = el("div", contents, { className: "cell" });
+                    return el(elementName, wrappedContents);
                 }
             };
+
+            class AbstractBalancedSetSimulation {
+                constructor() {
+                    this._lastN = -1;
+                    this._lastM = -1;
+                    this.__lastSimulations = [];
+
+                    this._form().addEventListener("submit", ev => {
+                        ev.preventDefault();
+                        const formData = new FormData(ev.target);
+                        this.run(formData.get("N"), formData.get("M"));
+                    });
+                }
+
+                run(N, M) {
+                    const list = this._generateRandomIntegerList(N, M);
+                    const actualCount = this._actualCount(list, M);
+
+                    this._drawIntegerList(list);
+                    this._drawExpectedCount(N, M);
+                    this._drawActualCount(actualCount);
+                    this._drawAverageCount(N, M, actualCount);
+                }
+
+                _generateRandomIntegerList(N, M) {
+                    const list = [];
+                    for (let i = 0; i < N; i++) list[i] = this._randomInteger(M);
+                    return list;
+                }
+
+                _randomInteger(M) {
+                    return Math.floor((Math.random() * (2*M + 1)) -M);
+                }
+
+                _drawExpectedCount(N, M) {
+                    this._expectedCountHolder().innerText = this._expectedCount(N, M);
+                }
+
+                _drawActualCount(actualCount) {
+                    this._actualCountHolder().innerText = actualCount;
+                }
+
+                _drawAverageCount(N, M, actualCount) {
+                    if (this._lastN !== N || this._lastM !== M) this._lastSimulations = [];
+                    this._lastSimulations.push(actualCount);
+                    const averageCount = this._lastSimulations.reduce((acc, x) => acc + x) / this._lastSimulations.length;
+                    this._averageCountHolder().innerText = averageCount;
+                    this._lastN = N;
+                    this._lastM = M;
+                }
+
+                _drawIntegerList(list) {
+                    this._integerList().innerText = "";
+
+                    const N = list.length;
+
+                    list.forEach((x, index) => {
+                        this._integerList().append(el("span", x));
+                        if (index < N-1) this._integerList().append(el("span", ", "));
+                    });
+                }
+
+                _form() { return this._root().querySelector("form"); }
+                _integerList() { return this._root().querySelector(".integer-list") }
+                _expectedCountHolder() { return this._root().querySelector(".expected-count") }
+                _actualCountHolder() { return this._root().querySelector(".actual-count") }
+                _averageCountHolder() { return this._root().querySelector(".average-count") }
+            };
+
+            class BalancedPairSimulation extends AbstractBalancedSetSimulation {
+                _root() { return document.getElementById("balanced-pair-simulation-root"); }
+
+                _expectedCount(N, M) {
+                    return Math.round((N**2 - N) / 2 * (3*M**2 + 3*M + 1) / (2*M + 1)**2);
+                }
+
+                _actualCount(list, M) {
+                    const N = list.length;
+                    let count = 0;
+
+                    for (let i = 0; i < N; i++)
+                        for (let j = i+1; j < N; j++) {
+                            const sum = list[i] + list[j];
+                            if (sum >= -M && sum <= M) count++;
+                        }
+
+                    return count;
+                }
+            }
+
+            class BalancedTripleSimulation extends AbstractBalancedSetSimulation {
+                _root() { return document.getElementById("balanced-triple-simulation-root"); }
+
+                _expectedCount(N, M) {
+                    return Math.round((N**3/6 - N**2/2 + N/3) * (3*M**2 + 3*M + 1) / (2*M + 1)**3);
+                }
+
+                _actualCount(list, M) {
+                    const N = list.length;
+                    let count = 0;
+
+                    for (let i = 0; i < N; i++)
+                        for (let j = i+1; j < N; j++)
+                            for (let k = j+1; k < N; k++)
+                                if (list[i] + list[j] + list[k] === 0) count++;
+
+                    return count;
+                }
+            }
 
             main();
 
             function main() {
-                const form = document.getElementById("form");
+                const pairsTableForm = document.getElementById("pairs-table-form");
 
-                form.addEventListener("submit", (ev) => {
+                pairsTableForm.addEventListener("submit", (ev) => {
                     ev.preventDefault();
-                    const M = document.getElementById("M-input").value;
+                    const M = new FormData(pairsTableForm).get("M");
                     PairsTable.draw(M);
                 });
 
-                form.querySelector("input").focus();
+                pairsTableForm.querySelector("input").focus();
 
                 PairsTable.draw(5);
 
+                new BalancedPairSimulation().run(1000, 50);
+                new BalancedTripleSimulation().run(1000, 50);
+
                 renderMarkdown();
-
-                const M = 50;
-                let a = 0;
-
-                for (let i = 0; i < 1000; i++) {
-                    const list = generateRandomIntegerList(1000, M);
-                    a += countBalancedPairs(list, M);
-                }
-
-                console.log(a / 1000);
             }
 
             function renderMarkdown() {
@@ -210,39 +365,21 @@ For instance, given *M = 50* and *N = 1000*, we should find around *374,637* bal
                 });
             }
 
-            function generateRandomIntegerList(N, M) {
-                const list = [];
-                for (let i = 0; i < N; i++) list[i] = randomInteger(M);
-                return list;
-            }
+            function el(elementName, contents = "", { className, id } = {}) {
+                const element = document.createElement(elementName);
 
-            function randomInteger(M) {
-                return Math.floor((Math.random() * (2*M + 1)) -M);
-            }
+                if (className) element.className = className;
+                if (id) element.id = id;
 
-            function countBalancedPairs(a, M) {
-                const N = a.length;
-                let count = 0;
+                if (typeof contents === "string" || typeof contents === "number") {
+                    element.innerText = contents;
+                } else if (typeof contents === "object") {
+                    element.appendChild(contents);
+                } else {
+                    throw "error, unexpected " + typeof contents;
+                }
 
-                for (let i = 0; i < N; i++)
-                    for (let j = i+1; j < N; j++) {
-                        const sum = a[i] + a[j];
-                        if (sum >= -M && sum <= M) count++;
-                    }
-
-                return count;
-            }
-
-            function countBalancingTriples(a) {
-                const N = a.length;
-                let count = 0;
-
-                for (let i = 0; i < N; i++)
-                    for (let j = i+1; j < N; j++)
-                        for (let k = j+1; k < N; k++)
-                            if (a[i] + a[j] + a[k] === 0) count++;
-
-                return count;
+                return element;
             }
         </script>
     </body>
