@@ -5,18 +5,18 @@ import java.util.DoubleSummaryStatistics;
 import edu.princeton.cs.algs4.StdOut;
 import algsex.support.Stopwatch;
 
-public abstract class DoublingRatioExperiment {
-    protected abstract void doRunExperiment(int N);
+public abstract class DoublingRatioTest {
+    protected abstract void runExperiment(int N);
     protected abstract String label();
 
     public void run() {
-        run(1);
+        run(defaultRunsPerN());
     }
 
     public void run(int runsPerN) {
         StdOut.println("Running experiment \"" + label() + "\"");
         StdOut.println("Runs per N: " + runsPerN);
-        StdOut.println("N, avg. time (ms), avg. ratio, time std.");
+        StdOut.println("N, avg. time (ms), avg. ratio, time std., time CV");
 
         double prevTime = -1;
 
@@ -33,12 +33,15 @@ public abstract class DoublingRatioExperiment {
             double avgTime = average(times);
             double avgRatio = average(ratios);
             double timeStdDeviation = sampleStandardDevation(times);
+            double timeCoefficientOfVariation = timeStdDeviation/avgTime;
 
-            StdOut.printf("%d\t%5.1f\t%5.1f\t%5.1f\n", N, avgTime, avgRatio, timeStdDeviation);
+            StdOut.printf("%d\t%5.1f\t%5.1f\t%5.1f\t%5.1f\n", N, avgTime, avgRatio, timeStdDeviation, timeCoefficientOfVariation);
 
             prevTime = avgTime;
         }
     }
+
+    protected int defaultRunsPerN() { return 1; }
 
     protected boolean iterationCondition(int N) {
         return N > 0;
@@ -46,7 +49,7 @@ public abstract class DoublingRatioExperiment {
 
     private double runTimeTrial(int N) {
         Stopwatch timer = new Stopwatch();
-        doRunExperiment(N);
+        runExperiment(N);
         return timer.elapsedTime();
     }
 

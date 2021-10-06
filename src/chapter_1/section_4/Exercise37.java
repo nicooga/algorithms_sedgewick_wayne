@@ -2,7 +2,7 @@ package algsex.chapter1.section4;
 
 import java.util.*;
 import edu.princeton.cs.algs4.StdOut;
-import algsex.support.DoublingRatioExperiment;
+import algsex.support.DoublingRatioTest;
 
 // 1.4.37 Autoboxing performance penalty. Run experiments to determine the perfor-
 // mance penalty on your machine for using autoboxing and auto-unboxing. Develop an
@@ -19,12 +19,12 @@ import algsex.support.DoublingRatioExperiment;
 public class Exercise37 {
     public static void main(String[] args) {
         while (true) {
-            new NormalStackDoublingRatioExperiment().run();
-            new GenericStackDoublingRatioExperiment().run();
+            new NormalStackDoublingRatioTest().run();
+            new GenericStackDoublingRatioTest().run();
         }
     }
 
-    private static class NormalStackDoublingRatioExperiment extends StackDoublingRatioExperiment {
+    private static class NormalStackDoublingRatioTest extends StackDoublingRatioTest {
         protected String label() {
             return "ratios for normal stack (N, time, ratio)";
         }
@@ -34,7 +34,7 @@ public class Exercise37 {
         }
     }
 
-    private static class GenericStackDoublingRatioExperiment extends StackDoublingRatioExperiment {
+    private static class GenericStackDoublingRatioTest extends StackDoublingRatioTest {
         protected String label() {
             return "ratios for generic stack (N, time, ratio)";
         }
@@ -44,8 +44,8 @@ public class Exercise37 {
         }
     }
 
-    private static abstract class StackDoublingRatioExperiment extends DoublingRatioExperiment {
-        protected void doRunExperiment(int N) {
+    private static abstract class StackDoublingRatioTest extends DoublingRatioTest {
+        protected void runExperiment(int N) {
             Stack<String> s = instantiateStack(N);
             for (int i = 0; i < N; i++) s.push("some string");
         }

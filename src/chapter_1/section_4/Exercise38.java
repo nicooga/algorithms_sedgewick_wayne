@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.HashMap;
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
-import algsex.support.DoublingRatioExperiment;
+import algsex.support.DoublingRatioTest;
 
 // 1.4.38 Naive 3-sum implementation. Run experiments to evaluate the following im-
 // plementation of the inner loop of ThreeSum:
@@ -77,7 +77,7 @@ public class Exercise38 {
     public static class NaiveThreeSumExperiment extends Experiment {
         protected String label() { return "Naive ThreeSum"; }
 
-        protected void doDoRunExperiment(int[] a) {
+        protected void runExperiment(int[] a) {
             NaiveThreeSum.count(a);
         }
     }
@@ -85,22 +85,22 @@ public class Exercise38 {
     public static class FastThreeSumExperiment extends Experiment {
         protected String label() { return "Fast ThreeSum"; }
 
-        protected void doDoRunExperiment(int[] a) {
+        protected void runExperiment(int[] a) {
             FastThreeSum.count(a);
         }
     }
 
-    private static abstract class Experiment extends DoublingRatioExperiment  {
-        protected void doRunExperiment(int N) {
+    private static abstract class Experiment extends DoublingRatioTest  {
+        protected void runExperiment(int N) {
             int[] a = TestDataGenerator.getOrCreateTestData(N);
-            doDoRunExperiment(a);
+            runExperiment(a);
         }
 
         protected boolean iterationCondition(int N) {
             return N <= 16384;
         }
 
-        protected abstract void doDoRunExperiment(int[] a);
+        protected abstract void runExperiment(int[] a);
     }
 
     // Generates and serves test data, ensuring we use the same data for all tests.
