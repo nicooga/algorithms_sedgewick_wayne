@@ -1,62 +1,50 @@
-> 1.4.41 Running times. Estimate the amount of time it would take to run TwoSumFast,
-> TwoSum, ThreeSumFast and ThreeSum on your computer to solve the problems for a file
-> of 1 million numbers. Use DoublingRatio to do so.
+> 1.4.42 Problem sizes. Estimate the size of the largest value of P for which you can run
+> TwoSumFast, TwoSum, ThreeSumFast, and ThreeSum on your computer to solve the
+> problems for a file of 2P thousand numbers. Use DoublingRatio to do so.
 
-### Generalizing the approach
+There are two main resources that we need to thing about: time and memory.
 
-Let's consider the following test results:
+### Memory
 
-    ...
-    1024      0.4     2.0     0.5     1.3
-    2048      0.9     2.3     0.3     0.4
-    4096      3.9     4.3     0.7     0.2
-    8192     15.2     3.9     1.4     0.1
-    16384    56.6     3.7     3.7     0.1
-    32768   219.6     3.9     7.6     0.0
-    65536   875.0     4.0    21.6     0.0
-    131072  3599.8    4.1   199.4     0.1
+All these algorithms have a memory consumption relative to the cost of holding an N length `int` array in memory. This is, `~4N` bytes.
 
-We can assume a doubling ratio of 3.8 for a relatevely accuarate approximation.
-It makes sense to choose this value since the CV (coefficient of variation) for these iterations show that the results have stabilized after N = 4096. Taking the average of the ratios after N = 4096 (4.3, 3.9, 3.7, 3.9, 4.0, 4.1) and rounding to 1 decimal place gives 4.
+The following inequality gives an upper and very rough limit on the size of `N = 2^p` for the execution of these algorithms, assuming 20GB of free memory:
 
-Taking the running time of ~3600ms for 2^17 integers as reference, we can predict the following running times:
+`4(2^p) <= 20 * 10^9`
 
-N    | T(N)
------|-----------------
-2^15 | 3600 * 1/4 * 1/4
-2^16 | 3600 * 1/4
-2^17 | 3600 * 4
-2^18 | 3600 * 4 * 4
-2^19 | 3600 * 4 * 4 * 4
+Solving for `p` gives us `p <= lg(5*10^9) -> p <~ 32`.
 
-The pattern arises. Given an reference running time `rt` for a number `N = 2^rp`, and a doubling ratio `R`, `T(N)` is defined as:
+Depending on the algorithm and the available memory and the maximum time that we allow the program to run, the upper limit may be given by time or memory.
 
-    T(N) = rt * R^(lg(N) - rp)
+### Time
 
-### Predicted running times
+We can use the formula `T(N) = tr * R^(lg(N) - rp)` to derive another inequation for the time. For this pupose we need to set a maximum time `M` that we allow the program to ru for.
 
-In the case of the test shown above, we have `p = 17`, `rt = 3600` and `R = 4`.
-`T(N)` is the defined as `T(N) = 3600 * 4^(lg(N) - 17)`.
-Using this formula we can predict the running time for `10^6`:
+Then, let's rewrite `T(2^p)` in terms of `p` to get an inequation that makes the running time less than or equal to `M`:
 
-`T(10^6) = 3600 * 4^(lg(10^6) - 17) =~ 209547.5 ms
+    T(2^p) = rt * R^(lg(2^p) - rp) = rt * R^(p - rp)
+    rt * R^(p - rp) <= M
+    R^(p - rp) <= M/rt
+    log(r, R^(p-rp)) <= log(R, M/rt)
+    p - rp <= log(R, M/rt)
+    p <= log(R, M/rt) + rp
 
-This is equal to roughly 3.5 minutes.
+So we finally get the general formula `p <= log(R, M/rt) + rp`.
+We can later replace here the values for doubling ratio (`R`), reference time (`rt`) and reference power `rp` to get final answers:
 
-I will use the same approach to predict the running times for the remaining algoritms.
+Algorithm    | N = 2^rp | rt (ms) | R   | Upper bound for P
+-------------|----------|---------|-----|-------------------
+TwoSum       | 2^17     | 3600    | 4   | ~23
+TwoSumFast   | 2^19     | 50      | 1.8 | ~40
+ThreeSum     | 2^13     | 32154   | 7.2 | ~16
+ThreeSumFast | 2^16     | 125558  | 4.4 | ~19
 
-Algorithm    | N = 2^rp | rt (ms) | R   | Predicted running time for N = 10^6
--------------|----------|---------|-----|------------------------------------
-TwoSum       | 2^17     | 3600    | 4   | 3.5 minutes
-TwoSumFast   | 2^19     | 50      | 1.8 | 86.5 ms.
-ThreeSum     | 2^13     | 32154   | 7.2 | 326 days
-ThreeSumFast | 2^16     | 125558  | 4.4 | 12 hs.
+... given `M = 4 * 60 * 60 * 1000 = 14.4 * 10^6` (4 hours to milliseconds).
 
-<!-- T(N) = rt * R^(lg(N) - rp) -->
-<!-- T(N) = 125558 * 4.4^(lg(N) - 16) -->
+In my particular case, having chosen 4 hours for `M` and 20GB as my available memory, the upper limit for `p` is always going to be given by `M` and not the memory.
 
 <details>
-    <summary>Based on the following test results:</summary>
+    <summary>Based on the following test results from previous exercise:</summary>
 
     Running experiment "TwoSum"
     Runs per N: 10
