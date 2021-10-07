@@ -10,13 +10,12 @@ import algsex.support.DoublingRatioTest;
 // TwoSum, ThreeSumFast and ThreeSum on your computer to solve the problems for a file
 // of 1 million numbers. Use DoublingRatio to do so.
 public class Exercise41 {
-    private static final int MAX_N = 32768;
+    private static final int MAX_N = (int) Math.pow(2, 19);
+    private static final int RUNS_PER_N = 10;
 
     public static void main(String[] args) {
-        TestDataGenerator.getOrCreateTestData(1);
-        TestDataGenerator.getOrCreateTestData(1);
-        // runBasicTests();
-        // runDoublingRatioTests();
+        runBasicTests();
+        runDoublingRatioTests();
     }
 
     private static void runBasicTests() {
@@ -77,7 +76,10 @@ public class Exercise41 {
         }
 
         @Override
-        protected int defaultRunsPerN() { return 4; };
+        protected int defaultRunsPerN() { return RUNS_PER_N; };
+
+        @Override
+        protected boolean iterationCondition(int N) { return N <= MAX_N; }
     }
 
     private static class TestDataGenerator {
@@ -96,7 +98,7 @@ public class Exercise41 {
         }
 
         public static int[] getOrCreateTestData(int N) {
-            if (!cache.containsValue(N)) cache.put(N, createTestData(N));
+            if (!cache.containsKey(N)) cache.put(N, createTestData(N));
 
             Integer[] a = cache.get(N);
 
@@ -105,7 +107,12 @@ public class Exercise41 {
         }
 
         private static Integer[] createTestData(int N) {
-            assert INTERVAL_SIZE >= N;
+            try {
+                assert INTERVAL_SIZE >= N;
+            } catch (AssertionError e) {
+                StdOut.println("N: " + N);
+                throw e;
+            }
 
             StdOut.println("Generating integer set of size " + N);
 
@@ -116,7 +123,7 @@ public class Exercise41 {
                 do x = StdRandom.uniform(-INTERVAL_SIZE/2, INTERVAL_SIZE/2);
                 while (s.contains(x));
                 s.add(x);
-                StdOut.printf("(%d/%d)\r", i, N);
+                // StdOut.printf("(%d/%d)\r", i, N);
             }
 
             assert s.size() == N;
