@@ -4,6 +4,7 @@ import java.util.*;
 import edu.princeton.cs.algs4.*;
 import algsex.chapter1.section4.Exercise38;
 import algsex.support.Test;
+import algsex.support.TestDataGenerator;
 import algsex.support.DoublingRatioTest;
 
 // 1.4.41 Running times. Estimate the amount of time it would take to run TwoSumFast,
@@ -12,6 +13,7 @@ import algsex.support.DoublingRatioTest;
 public class Exercise41 {
     private static final int MAX_N = (int) Math.pow(2, 19);
     private static final int RUNS_PER_N = 10;
+    private static final TestDataGenerator testDataGenerator = new TestDataGenerator(-MAX_N/2, MAX_N/2);
 
     public static void main(String[] args) {
         runBasicTests();
@@ -30,7 +32,7 @@ public class Exercise41 {
     }
 
     private static void runDoublingRatioTests() {
-        TestDataGenerator.prime(1, MAX_N);
+        testDataGenerator.prime(1, MAX_N);
 
         new TwoSumTest().run();
         // new TwoSumFastTest().run();
@@ -71,7 +73,7 @@ public class Exercise41 {
 
         @Override
         protected void runExperiment(int N) {
-            int[] a = TestDataGenerator.getOrCreateTestData(N);
+            int[] a = testDataGenerator.getOrCreateTestData(N);
             doRunExperiment(a);
         }
 
@@ -80,60 +82,6 @@ public class Exercise41 {
 
         @Override
         protected boolean iterationCondition(int N) { return N <= MAX_N; }
-    }
-
-    private static class TestDataGenerator {
-        private static final int INTERVAL_SIZE = MAX_N;
-        private static Map<Integer, Integer[]> cache = new HashMap<>();
-
-        public static void prime(int minN, int maxN) {
-            assert minN <= maxN;
-
-            StdOut.println("Priming test data ...");
-
-            for (int N = minN; N <= maxN && N > 0; N *= 2)
-                getOrCreateTestData(N);
-
-            StdOut.println("Finished priming test data");
-        }
-
-        public static int[] getOrCreateTestData(int N) {
-            if (!cache.containsKey(N)) cache.put(N, createTestData(N));
-
-            Integer[] a = cache.get(N);
-
-            // Trick to cast Integer[] to int[]
-            return Arrays.stream(a).mapToInt(Integer::intValue).toArray();
-        }
-
-        private static Integer[] createTestData(int N) {
-            try {
-                assert INTERVAL_SIZE >= N;
-            } catch (AssertionError e) {
-                StdOut.println("N: " + N);
-                throw e;
-            }
-
-            StdOut.println("Generating integer set of size " + N);
-
-            Set<Integer> s = new HashSet<>();
-
-            for (int i = 0; i < N; i++) {
-                int x;
-                do x = StdRandom.uniform(-INTERVAL_SIZE/2, INTERVAL_SIZE/2);
-                while (s.contains(x));
-                s.add(x);
-                // StdOut.printf("(%d/%d)\r", i, N);
-            }
-
-            assert s.size() == N;
-
-            Integer[] a = new Integer[N];
-            int index = 0;
-            for (Integer x : s) a[index++] = x;
-
-            return a;
-        }
     }
 
     private static class TwoSum {
