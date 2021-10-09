@@ -4,14 +4,28 @@ import java.util.*;
 import edu.princeton.cs.algs4.*;
 import algsex.support.Test;
 import algsex.support.DoublingRatioTest;
+import algsex.support.TestDataGenerator;
 
 // 1.4.43 Resizing arrays versus linked lists. Run experiments to validate the hypothesis
 // that resizing arrays are faster than linked lists for stacks (see Exercise 1.4.35 and Exer-
 // cise 1.4.36). Do so by developing a version of DoublingRatio that computes the ratio
 public class Exercise43 {
+    private static final int RUNS_PER_N = 10;
+    private static final int MAX_N = (int) Math.pow(2, 32);
+    private static final boolean FORCE_GARBAGE_COLLECTION = false;
+    private static final TestDataGenerator generator =
+        new TestDataGenerator(-MAX_N/2, MAX_N/2);
+
     public static void main(String[] args) {
+        printRunParameters();
         runBasicTests();
-        // runDoublingRatioTests();
+        runDoublingRatioTests();
+    }
+
+    private static void printRunParameters() {
+        StdOut.println("runs per N: " + RUNS_PER_N);
+        StdOut.println("max N: " + MAX_N);
+        StdOut.println("forced garbage collection: " + FORCE_GARBAGE_COLLECTION);
     }
 
     private static void runBasicTests() {
@@ -48,12 +62,49 @@ public class Exercise43 {
         Test.assertTrue(s.isEmpty());
     }
 
-    // private static class BaseDoublingRatioTest extends DoublingRatioTest {
-    //     @Override
-    //     protected void runExperiment(int N) {
-    //         doRunExperiment();
-    //     }
-    // }
+    private static void runDoublingRatioTests() {
+        // new ResizingArrayTest().run();
+        new LinkedListTest().run();
+    }
+
+    private static class ResizingArrayTest extends BaseTest {
+        @Override
+        protected String label() { return "Resizing array"; }
+        @Override
+        protected IStack<Integer> stack() { return new ResizingArrayStack<>(); }
+    }
+
+    private static class LinkedListTest extends BaseTest {
+        @Override
+        protected String label() { return "Linked list"; }
+        @Override
+        protected IStack<Integer> stack() { return new Stack<>(); }
+    }
+
+    private static abstract class BaseTest extends DoublingRatioTest {
+        abstract protected IStack<Integer> stack();
+
+        private int[] testData;
+        private IStack<Integer> s;
+
+        @Override
+        protected void beforeExperiment(int N) {
+           if (FORCE_GARBAGE_COLLECTION) System.gc();
+           testData = generator.getOrCreateTestData(N);
+           s = stack();
+         }
+
+        @Override
+        protected void runExperiment(int N) {
+            for (int i : testData) s.push(i);
+        }
+
+        @Override
+        protected int defaultRunsPerN() { return RUNS_PER_N; }
+
+        @Override
+        protected boolean iterationCondition(int N) { return N <= MAX_N; }
+    }
 
     private static class ResizingArrayStack<Item> implements IStack<Item> {
         private Item[] a = (Item[]) new Object[1];

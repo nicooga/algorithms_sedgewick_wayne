@@ -34,10 +34,10 @@ We can later replace here the values for doubling ratio (`R`), reference time (`
 
 Algorithm    | N = 2^rp | rt (ms) | R   | Upper bound for P
 -------------|----------|---------|-----|-------------------
-TwoSum       | 2^17     | 3600    | 4   | ~23
-TwoSumFast   | 2^19     | 50      | 1.8 | ~40
-ThreeSum     | 2^13     | 32154   | 7.2 | ~16
-ThreeSumFast | 2^16     | 125558  | 4.4 | ~19
+TwoSum       | 2^17     | 3600    | 4   | ~28
+TwoSumFast   | 2^19     | 50      | 2   | ~48
+ThreeSum     | 2^13     | 32154   | 8   | ~19
+ThreeSumFast | 2^16     | 125558  | 4   | ~26
 
 ... given `M = 4 * 60 * 60 * 1000 = 14.4 * 10^6` (4 hours to milliseconds).
 

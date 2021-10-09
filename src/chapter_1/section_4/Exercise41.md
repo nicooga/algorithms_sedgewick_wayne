@@ -17,7 +17,7 @@ Let's consider the following test results:
     131072  3599.8    4.1   199.4     0.1
 
 We can assume a doubling ratio of 3.8 for a relatevely accuarate approximation.
-It makes sense to choose this value since the CV (coefficient of variation) for these iterations show that the results have stabilized after N = 4096. Taking the average of the ratios after N = 4096 (4.3, 3.9, 3.7, 3.9, 4.0, 4.1) and rounding to 1 decimal place gives 4.
+It makes sense to choose this value since the CV (coefficient of variation) for these iterations show that the results have stabilized after N = 4096. Taking the average of the ratios after N = 4096 (4.3, 3.9, 3.7, 3.9, 4.0, 4.1) and rounding to the closest power of two gives us 4.
 
 Taking the running time of ~3600ms for 2^17 integers as reference, we can predict the following running times:
 
@@ -47,13 +47,13 @@ I will use the same approach to predict the running times for the remaining algo
 
 Algorithm    | N = 2^rp | rt (ms) | R   | Predicted running time for N = 10^6
 -------------|----------|---------|-----|------------------------------------
-TwoSum       | 2^17     | 3600    | 4   | 3.5 minutes
-TwoSumFast   | 2^19     | 50      | 1.8 | 86.5 ms.
-ThreeSum     | 2^13     | 32154   | 7.2 | 326 days
-ThreeSumFast | 2^16     | 125558  | 4.4 | 12 hs.
+TwoSum       | 2^17     | 3600    | 4   | ~3.5 minutes
+TwoSumFast   | 2^19     | 50      | 2   | ~95.5 ms.
+ThreeSum     | 2^13     | 32154   | 8   | ~677 days
+ThreeSumFast | 2^16     | 125558  | 4   | ~8 hs.
 
 <!-- T(N) = rt * R^(lg(N) - rp) -->
-<!-- T(N) = 125558 * 4.4^(lg(N) - 16) -->
+<!-- T(N) = 50 * 2^(lg(10^6) - 19) -->
 
 <details>
     <summary>Based on the following test results:</summary>

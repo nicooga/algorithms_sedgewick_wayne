@@ -48,6 +48,7 @@ public abstract class DoublingRatioTest {
     }
 
     private double runTimeTrial(int N) {
+        beforeExperiment(N);
         Stopwatch timer = new Stopwatch();
         runExperiment(N);
         return timer.elapsedTime();
@@ -72,4 +73,6 @@ public abstract class DoublingRatioTest {
             .summaryStatistics()
             .getAverage();
     }
+
+    protected void beforeExperiment(int N) {}
 }

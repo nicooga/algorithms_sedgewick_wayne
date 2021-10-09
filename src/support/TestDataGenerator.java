@@ -11,6 +11,7 @@ import edu.princeton.cs.algs4.StdRandom;
 public class TestDataGenerator {
     private final int min;
     private final int max;
+    private boolean verbose = false;
     private final Map<Integer, Integer[]> cache = new HashMap<>();
 
     public TestDataGenerator(int min, int max) {
@@ -18,30 +19,33 @@ public class TestDataGenerator {
         this.max = max;
     }
 
+    public TestDataGenerator(int min, int max, boolean verbose) {
+        this.min = min;
+        this.max = max;
+        this.verbose = verbose;
+    }
+
     public void prime(int minN, int maxN) {
         assert minN <= maxN;
 
-        StdOut.println("Priming test data ...");
+        println("Priming test data ...");
 
         for (int N = minN; N <= maxN && N > 0; N *= 2)
             getOrCreateTestData(N);
 
-        StdOut.println("Finished priming test data");
+        println("Finished priming test data");
     }
 
     public int[] getOrCreateTestData(int N) {
         if (!cache.containsKey(N)) cache.put(N, createTestData(N));
-
-        Integer[] a = cache.get(N);
-
-        // Trick to cast Integer[] to int[]
-        return Arrays.stream(a).mapToInt(Integer::intValue).toArray();
+        return toIntArray(cache.get(N));
     }
 
     private Integer[] createTestData(int N) {
-        assert intervalSize() >= N;
+        assert intervalSize() >= N :
+            String.format("Interval size %d is too small. We can't generate a unique integer set of size %d.", intervalSize(), N);
 
-        StdOut.println("Generating integer set of size " + N);
+        println("Generating integer set of size " + N);
 
         Set<Integer> s = new HashSet<>();
 
@@ -50,7 +54,6 @@ public class TestDataGenerator {
             do x = StdRandom.uniform(min, max);
             while (s.contains(x));
             s.add(x);
-            // StdOut.printf("(%d/%d)\r", i, N);
         }
 
         assert s.size() == N;
@@ -64,5 +67,14 @@ public class TestDataGenerator {
 
     private int intervalSize() {
         return max - min + 1;
+    }
+
+    private void println(String s) {
+        if (!verbose) return;
+        StdOut.println(s);
+    }
+
+    private int[] toIntArray(Integer[] a) {
+        return Arrays.stream(a).mapToInt(Integer::intValue).toArray();
     }
 }
