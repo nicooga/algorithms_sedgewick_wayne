@@ -10,8 +10,10 @@ import algsex.misc.UnionFind;
 // 9-0 3-4 5-8 7-2 2-1 5-7 0-3 4-2.
 public class Exercise1 {
     public static void main(String[] args) {
-        InstrumentedUnionFind uf = new InstrumentedUnionFindViaQuickFind(10);
+        runExperiment(new InstrumentedUnionFindViaQuickFind(10));
+    }
 
+    public static void runExperiment(InstrumentedUnionFind uf) {
         uf.union(9, 0);
         uf.union(3, 4);
         uf.union(5, 4);
@@ -56,7 +58,7 @@ public class Exercise1 {
         public InstrumentedArray<Integer> id() { return id; }
     }
 
-    private interface InstrumentedUnionFind extends UnionFind {
+    public interface InstrumentedUnionFind extends UnionFind {
         InstrumentedArray<Integer> id();
         int arrayAccesses();
     }
