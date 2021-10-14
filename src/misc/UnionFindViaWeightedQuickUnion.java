@@ -58,5 +58,4 @@ public class UnionFindViaWeightedQuickUnion implements UnionFind {
 
         StdOut.println(uf.count() + " components");
     }
-
 }
