@@ -6,6 +6,10 @@ import algsex.chapter1.section5.Exercise1.InstrumentedUnionFind;
 import algsex.support.InstrumentedArray;
 
 // 1.5.3 Do Exercise 1.5.1, but use weighted quick-union (page 228).
+
+// Results:
+// id[]: [2, 2, 2, 4, 2, 4, 6, 2, 8, 0]
+// array accesses: 43
 public class Exercise3 {
     public static void main(String[] args) {
         Exercise1.runExperiment(new InstrumentedUnionFindViaWeightedQuickUnion(10));

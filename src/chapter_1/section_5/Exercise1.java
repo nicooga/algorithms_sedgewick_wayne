@@ -8,6 +8,10 @@ import algsex.misc.UnionFind;
 // 1.5.1 Show the contents of the id[] array and the number of times the ar-
 // ray is accessed for each input pair when you use quick-find for the sequence
 // 9-0 3-4 5-8 7-2 2-1 5-7 0-3 4-2.
+
+// Results:
+// id[]: [1, 1, 1, 1, 1, 1, 6, 1, 8, 1]
+// array accesses: 107
 public class Exercise1 {
     public static void main(String[] args) {
         runExperiment(new InstrumentedUnionFindViaQuickFind(10));

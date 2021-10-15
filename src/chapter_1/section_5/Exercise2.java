@@ -7,6 +7,10 @@ import algsex.support.InstrumentedArray;
 
 // 1.5.2 Do Exercise 1.5.1, but use quick-union (page 224). In addition, draw the forest of
 // trees represented by the id[] array after each input pair is processed.
+
+// Results:
+// id[]: [1, 1, 1, 4, 1, 4, 6, 2, 8, 0]
+// array accesses: 47
 public class Exercise2 {
     public static void main(String[] args) {
         Exercise1.runExperiment(new InstrumentedUnionFindViaQuickUnion(10));
