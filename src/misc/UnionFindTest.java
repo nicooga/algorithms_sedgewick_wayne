@@ -15,14 +15,12 @@ public class UnionFindTest {
         StdOut.println("Tests passed");
     }
 
-    private static void runTest(UnionFind uf) {
+    public static void runTest(UnionFind uf) {
         uf.union(1, 3);
         uf.union(4, 3);
-
-        Test.assertTrue(uf.connected(4, 1));
-
         uf.union(4, 6);
 
+        Test.assertTrue(uf.connected(4, 1));
         Test.assertTrue(uf.connected(6, 1));
         Test.assertFalse(uf.connected(0, 1));
         Test.assertFalse(uf.connected(5, 1));
