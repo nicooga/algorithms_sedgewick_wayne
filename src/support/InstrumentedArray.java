@@ -24,4 +24,5 @@ public class InstrumentedArray<T> {
     public int length() { return a.length; }
     public int accesses() { return accesses; }
     public String toString() { return Arrays.toString(a); }
+    public void resetCounters() { accesses = 0; }
 }

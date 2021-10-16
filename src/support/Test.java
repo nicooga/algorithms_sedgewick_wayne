@@ -4,8 +4,11 @@ import java.util.Arrays;
 
 public class Test {
     public static void assertEqual(int actual, int expected) {
-        assert actual == expected :
-          String.format("Expected %s, but got %s", expected, actual);
+        assertEqual(actual, expected, String.format("Expected %s, but got %s", expected, actual));
+    }
+
+    public static void assertEqual(int actual, int expected, String errorMessage) {
+        assert actual == expected : errorMessage;
     }
 
     public static void assertEqual(Object actual, Object expected) {
@@ -14,7 +17,11 @@ public class Test {
     }
 
     public static void assertTrue(boolean bool) {
-        assert bool : "Expected true but got false";
+        assertTrue(bool, "Expected true but got false");
+    }
+
+    public static void assertTrue(boolean bool, String errorMessage) {
+        assert bool : errorMessage;
     }
 
     public static void assertFalse(boolean bool) {

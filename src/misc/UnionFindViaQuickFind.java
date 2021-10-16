@@ -18,13 +18,13 @@ public class UnionFindViaQuickFind implements UnionFind {
     public boolean connected(int p, int q) { return find(p) == find(q); }
 
      public void union(int p, int q) {
-        int pID = find(p);
-        int qID = find(q);
+        int pRoot = find(p);
+        int qRoot = find(q);
 
-        if (pID == qID) return;
+        if (pRoot == qRoot) return;
 
         for (int i = 0; i < id.length; i++)
-            if (id[i] == pID) id[i] = qID;
+            if (id[i] == pRoot) id[i] = qRoot;
 
         count--;
     }
