@@ -12,6 +12,7 @@ main() {
 
   check_existance $exercise_file
   generate_exercise_scaffold $exercise_file $chapter $section $exercise
+  watch-run-ex $chapter $section $exercise
 }
 
 check_existance() {
