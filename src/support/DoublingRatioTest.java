@@ -20,7 +20,7 @@ public abstract class DoublingRatioTest {
 
         double prevTime = -1;
 
-        for (int N = 1; iterationCondition(N); N *= 2) {
+        for (int N = initialN(); iterationCondition(N); N *= 2) {
             double[] times = new double[runsPerN];
             double[] ratios = new double[runsPerN];
 
@@ -41,7 +41,8 @@ public abstract class DoublingRatioTest {
         }
     }
 
-    protected int defaultRunsPerN() { return 1; }
+    protected int initialN() { return 8; }
+    protected int defaultRunsPerN() { return 3; }
 
     protected boolean iterationCondition(int N) {
         return N > 0;
