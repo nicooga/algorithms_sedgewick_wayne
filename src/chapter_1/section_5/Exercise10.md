@@ -4,4 +4,4 @@
 > be invalid
 
 We would we doing the opposite of normal: attaching the larger tree to the smaller one.
-This makes it so we always generate a larger tree each time we merge.
+This makes it so we always generate a larger tree each time we merge, which breaks the property of the algorithm of keeping the max depth under `lg(N)`. See previous exercise explanation.
