@@ -24,35 +24,75 @@ Here's another way to explain why the max depth of trees cannot go over `lg(N)`.
 The wighted quick union algorithm works so that when we have to merge two trees, we merge the smaller one in to the larger one, if the trees are different sizes.
 Otherwise, we will default to merging the right or the left tree into the remaining one.
 
-Merging a smaller tree into a larger tree gives a tree that has the depth of the larger one. **The only way we can grow in depth is when we merge two trees that have the same depth.** This requirement is recursive. For us to have two trees of depth `x`, we need two trees of depth `x-1`, and for each of these we need another two trees of depth `x-2`, and so on.
+The base case happens at the start when we only have single node trees.
 
-Then, we can define a function `C(d)` that returns the minimum cost in nodes to form a tree of depth `d`:
+~~~
+0
+|
+1
+~~~
+
+The only way to grow in depth is to union two single nodes.
+By definition, we can say that the cost of achieving a tree of depth 1 is then 2 nodes:
 
 ```
-C(d) = 2 * C(d-1)
-C(0) = 1
 C(1) = 2
-C(2) = 2 * 2
-C(3) = 2 * 2 * 2
-...
 ```
 
-then simply:
+Then, to grow up to depth 2 we need another tree that is equally big or bigger than the current.
+Unioning more single nodes will not deepen our tree.
+
+The options are either unioning with another pair, or unioning with a tree that looks like this:
 
 ```
+  0
+ /|\
+1 2 3
+```
+
+It has depth 1 too, but having more children implies that N has exceeded `2^d`, where d is 2, the depth we want to achieve.
+Most importantly, this shows that we need at least the same amount of nodes to grow in depth.
+
+~~~
+C(2) = 4
+~~~
+
+This rule extends recursively for all depths.
+
+Suppose we achieved a depth 2 tree, minimizing the amount of nodes:
+
+```
+0
+|\
+1 2
+  |\
+  3 4
+```
+
+We know the minimum cost for achieving this depth is 4, so we have minimized its size.
+Now again, in order to grow higher we need an equallly sized or larger tree.
+Its minimum cost is the same as for the current.
+
+The other tree could have had more than 4 nodes, but again this would mean that N exceeded 8.
+This is equal to `2^d`, where d is 3, the next depth that we want to achieve.
+
+Hopefully, this illustrates clearly how the minimum cost in nodes is defined:
+
+```
+C(1) = 2
+C(d) = 2 * C(d-1)
 C(d) = 2^d
 ```
 
-Therefore, for us to have a tree of depth `d`, `N` must be greater than or equal to `2^d`:
+For us to reach a max depth `d` then, `N` must be greater than or equal to `C(d)`.
+Or, in other words, N must exceed 2^d:
 
 ```
-N >= 2^d
+N >= C(d) = 2^d
 ```
 
-From this we can derive:
+... from which we can derive:
 
 ```
 d <= lg(N)
 ```
-
-.... which finally shows that the depth of any single tree can't go over `lg(N)`.
