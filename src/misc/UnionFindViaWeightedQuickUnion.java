@@ -46,7 +46,7 @@ public class UnionFindViaWeightedQuickUnion implements UnionFind {
 
     public static void main(String[] args) {
         int N = StdIn.readInt();
-        UnionFind uf = new UnionFindViaQuickFind(N);
+        UnionFind uf = new UnionFindViaWeightedQuickUnion(N);
 
         while (!StdIn.isEmpty()) {
             int p = StdIn.readInt();

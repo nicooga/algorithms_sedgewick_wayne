@@ -14,7 +14,7 @@ import algsex.misc.UnionFindTest;
 public class Exercise12 {
     public static void main(String[] args) {
         runBasicTests();
-        runDepth4Experiment();
+        runDepthExperiment();
 
         StdOut.println("Tests passed");
     }
@@ -23,9 +23,11 @@ public class Exercise12 {
         UnionFindTest.runTest(new UnionFindViaQuickUnionWithPathCompression(8));
     }
 
-    private static void runDepth4Experiment() {
-        InstrumentedUnionFind uf = new UnionFindViaQuickUnionWithPathCompression(16);
+    private static void runDepthExperiment() {
+        runDepthExperiment(new UnionFindViaQuickUnionWithPathCompression(16));
+    }
 
+    public static void runDepthExperiment(InstrumentedUnionFind uf) {
         // Union each consecutive node (0-1, 2-3, and so on)
         for (int i = 0; i <= 14; i += 2) uf.union(i, i+1);
         
@@ -96,7 +98,7 @@ public class Exercise12 {
         public int maxDepth() { return maxDepth; }
     }
 
-    private interface InstrumentedUnionFind extends UnionFind {
+    public interface InstrumentedUnionFind extends UnionFind {
         int maxDepth();
     }
 }
