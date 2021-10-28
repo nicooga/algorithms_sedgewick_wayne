@@ -28,15 +28,15 @@ public class Plot {
         Value v = new Value(x, y, color);
         values.add(v);
 
-        boolean needsToSetScale = false;
-
-        if (x > maxX || y > maxY) upscale();
+        if (x > maxX || y > maxY) upscale(x, y);
         else draw(v);
     }
 
-    private void upscale() {
-        maxX *= 1.5;
-        maxY *= 1.5;
+    private void upscale(double x, double y) {
+        while (maxX < x || maxY < y) {
+            maxX *= 1.5;
+            maxY *= 1.5;
+        }
 
         stdDraw.clear();
         setScale();
