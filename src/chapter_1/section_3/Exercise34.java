@@ -55,7 +55,7 @@ public class Exercise34 {
     StdOut.println("Tests passed");
   }
 
-  private static class RandomBag<T> implements Iterable<T> {
+  public static class RandomBag<T> implements Iterable<T> {
     private Node first;
     private int size;
 
