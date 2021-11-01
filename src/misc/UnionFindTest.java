@@ -1,6 +1,7 @@
 package algsex.misc;
 
 import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 import algsex.support.Test;
 import algsex.misc.UnionFind;
 
@@ -16,14 +17,40 @@ public class UnionFindTest {
     }
 
     public static void runTest(UnionFind uf) {
-        uf.union(1, 3);
-        uf.union(4, 3);
-        uf.union(4, 6);
+        runTest(uf, SITES);
+    }
 
-        Test.assertTrue(uf.connected(4, 1));
-        Test.assertTrue(uf.connected(6, 1));
-        Test.assertFalse(uf.connected(0, 1));
-        Test.assertFalse(uf.connected(5, 1));
-        Test.assertFalse(uf.connected(7, 1));
+    public static void runTest(UnionFind uf, int sites) {
+        for (int i = 0; i < SITES*3; i++) {
+            int x = StdRandom.uniform(1, sites);
+            int y = StdRandom.uniform(1, sites);
+            int w = StdRandom.uniform(1, sites);
+            int z = StdRandom.uniform(1, sites);
+
+            uf.union(x, y);
+            uf.union(y, w);
+            uf.union(z, w);
+
+            Test.assertFalse(uf.connected(x, 0));
+            Test.assertTrue(uf.connected(x, x));
+            Test.assertTrue(uf.connected(x, y));
+            Test.assertTrue(uf.connected(x, w));
+            Test.assertTrue(uf.connected(x, z));
+            Test.assertFalse(uf.connected(y, 0));
+            Test.assertTrue(uf.connected(y, y));
+            Test.assertTrue(uf.connected(y, w));
+            Test.assertTrue(uf.connected(y, z));
+            Test.assertFalse(uf.connected(y, 0));
+            Test.assertTrue(uf.connected(w, w));
+            Test.assertTrue(uf.connected(w, z));
+            Test.assertFalse(uf.connected(z, 0));
+            Test.assertTrue(uf.connected(z, z));
+
+            int firstComponent = uf.find(x);
+
+            Test.assertEqual(firstComponent, uf.find(y));
+            Test.assertEqual(firstComponent, uf.find(w));
+            Test.assertEqual(firstComponent, uf.find(z));
+        }
     }
 }
