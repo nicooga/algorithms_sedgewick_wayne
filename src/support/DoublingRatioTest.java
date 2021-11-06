@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import edu.princeton.cs.algs4.StdOut;
 import algsex.support.Stopwatch;
+import algsex.support.SystemStopwatch;
 
 public abstract class DoublingRatioTest {
     protected abstract void runExperiment(int N);
@@ -50,7 +51,7 @@ public abstract class DoublingRatioTest {
 
     private double runTimeTrial(int N) {
         beforeExperiment(N);
-        Stopwatch timer = new Stopwatch();
+        Stopwatch timer = new SystemStopwatch();
         runExperiment(N);
         return timer.elapsedTime();
     }

@@ -1,6 +1,7 @@
 package algsex.support;
 
-import edu.princeton.cs.algs4.*;
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
 
 class PrintRandomDoubles {
   public static void main(String[] args) {

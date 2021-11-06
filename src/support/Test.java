@@ -11,9 +11,14 @@ public class Test {
         assert actual == expected : errorMessage;
     }
 
+    public static void assertEqual(String actual, String expected) {
+        assert actual.equals(expected) :
+          String.format("\nExpected \"%s\",\nbut got: \"%s\"", expected, actual);
+    }
+
     public static void assertEqual(Object actual, Object expected) {
         assert actual == expected :
-          String.format("Expected %s, but got %s", expected, actual);
+          String.format("\nExpected \"%s\",\nbut got: \"%s\"", expected, actual);
     }
 
     public static void assertTrue(boolean bool) {
@@ -37,6 +42,17 @@ public class Test {
             );
     }
 
+    public static void assertLessThanOrEqual(double actual, double expected) {
+        assertLessThanOrEqual(
+            actual,
+            expected,
+            String.format(
+                "expected %s to be less than or equal to %s, but it wasn't.",
+                actual,
+                expected
+            )
+        );
+    }
 
     public static void assertLessThanOrEqual(int actual, int expected) {
         assertLessThanOrEqual(
@@ -51,6 +67,10 @@ public class Test {
     }
 
     public static void assertLessThanOrEqual(int actual, int expected, String message) {
+        assert actual <= expected : message;
+    }
+
+    public static void assertLessThanOrEqual(double actual, double expected, String message) {
         assert actual <= expected : message;
     }
 }
