@@ -17,7 +17,7 @@ public class Exercise17 {
         StdOut.println(ErdosRenyi.count(N));
     }
 
-    private static class ErdosRenyi {
+    public static class ErdosRenyi {
         public static int count(int N) {
             UnionFind uf = new UnionFindViaWeightedQuickUnion(N);
             int connections = 0;
