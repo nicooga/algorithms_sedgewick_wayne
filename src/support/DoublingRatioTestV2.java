@@ -29,6 +29,8 @@ public abstract class DoublingRatioTestV2{
             if (N == initialN()) sa.printHeader();
             beforeBatch(N, runsPerBatch);
             sa = runBatch(N, runsPerBatch, sa);
+            sa.computeStats();
+            sa.printLastBatchStats();
             prevBatchMeanTime = sa.meanTime.getValue();
         }
     }
@@ -80,8 +82,21 @@ public abstract class DoublingRatioTestV2{
 
             for (int i = 1; i < statsToDisplay.length; i++) {
                 Stat stat = statsToDisplay[i];
-                out.print(", ");
+                out.print("\t");
                 out.print(stat.label());
+            }
+
+            out.println("");
+        }
+
+        public void printLastBatchStats() {
+            Stat[] statsToDisplay = statsToDisplay();
+
+            out.printf("%.5f", statsToDisplay[1].value);
+
+            for (int i = 1; i < statsToDisplay.length; i++) {
+                Stat s = statsToDisplay[i];
+                out.printf("\t%.5f", s.value);
             }
 
             out.println("");
@@ -95,6 +110,11 @@ public abstract class DoublingRatioTestV2{
             meanRatio.setValue(meanRatio.getValue() * ((n-1)/n) + time/(n*prevBatchMeanTime));
         }
 
+        public void computeStats() {
+            computestandardDeviation();
+            computeCoefficientOfVariation();
+        }
+
         protected Stat[] statsToDisplay() {
             return new Stat[] {
                 meanTime,
@@ -104,18 +124,13 @@ public abstract class DoublingRatioTestV2{
             };
         }
 
-        public void computeStats() {
-            computestandardDeviation();
-            computecoefficientOfVariation();
-        }
-
         private void computestandardDeviation() {
             double timeVariance = timeSquaredDeviationsSum / (batchSize-1);
             double value = timeVariance / (batchSize-1);
             standardDeviation.setValue(value);
         }
 
-        private void computecoefficientOfVariation() {
+        private void computeCoefficientOfVariation() {
             double value = standardDeviation.getValue() / meanRatio.getValue();
             coefficientOfVariation.setValue(value);
         }
@@ -216,17 +231,22 @@ public abstract class DoublingRatioTestV2{
         private static void assertPrintedHeaderCorrectly(String[] outputLines) {
             Test.assertEqual(
                 outputLines[0],
-                "mean, mean ratio, stddev., CV"
+                "mean\tmean ratio\tstddev.\tCV"
             );
         }
 
         private static void assertPrintedStatsCorrectly(String[] outputLines) {
+            assert outputLines.length > 1;
+
             for (int batchNumber = 1; batchNumber < outputLines.length; batchNumber++)
                 assertPrintedStatsCorrectly(outputLines[batchNumber], batchNumber);
         }
 
         private static void assertPrintedStatsCorrectly(String line, int batchNumber) {
-            String[] parts = line.split("\\*,\\*");
+            String[] parts = line.split("\\s+");
+
+            System.out.println("===");
+            System.out.println(Arrays.toString(parts));
         }
 
         private static class TestTest extends DoublingRatioTestV2 {
