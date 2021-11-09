@@ -102,11 +102,11 @@ public abstract class DoublingRatioTestV2{
         public void printLastBatchStats() {
             Stat[] statsToDisplay = statsToDisplay();
 
-            out.printf("%.5f", statsToDisplay[0].getValue());
+            out.printf("%.2f", statsToDisplay[0].getValue());
 
             for (int i = 1; i < statsToDisplay.length; i++) {
                 Stat s = statsToDisplay[i];
-                out.printf("\t%.5f", s.getValue());
+                out.printf("\t%.2f", s.getValue());
             }
 
             out.println("");
@@ -253,14 +253,18 @@ public abstract class DoublingRatioTestV2{
         private static void assertPrintedStatsCorrectly(String line, int batchNumber) {
             String[] parts = line.split("\\s+");
 
+            System.out.println(Arrays.toString(parts));
+
             double mean = Double.parseDouble(parts[0]);
             double expectedMean =
                BASE_TIME * Math.pow(2, batchNumber-1) * (RUNS_PER_BATCH + 1);
 
-            Test.assertEqual(mean, expectedMean);
+            if (batchNumber > 0) {
+                double meanRatio = Double.parseDouble(parts[1]);
+                Test.assertEqual(meanRatio, 2);
+            }
 
-            // double meanRatio = Double.parseDouble(parts[1]);
-            // double stddev = Double.parseDouble(parts[2]);
+            double stddev = Double.parseDouble(parts[2]);
             // double coefficientOfVariation = Double.parseDouble(parts[3]);
         }
 
