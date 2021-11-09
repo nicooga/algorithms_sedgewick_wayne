@@ -16,6 +16,11 @@ public class Test {
           String.format("\nExpected \"%s\",\nbut got: \"%s\"", expected, actual);
     }
 
+    public static void assertEqual(double actual, double expected) {
+        assert actual == expected :
+          String.format("\nExpected %s,\nbut got: %s", expected, actual);
+    }
+
     public static void assertEqual(Object actual, Object expected) {
         assert actual == expected :
           String.format("\nExpected \"%s\",\nbut got: \"%s\"", expected, actual);

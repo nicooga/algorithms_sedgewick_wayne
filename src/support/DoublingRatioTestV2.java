@@ -29,9 +29,10 @@ public abstract class DoublingRatioTestV2{
             if (N == initialN()) sa.printHeader();
             beforeBatch(N, runsPerBatch);
             sa = runBatch(N, runsPerBatch, sa);
-            sa.computeStats();
+            sa.onBatchFinished();
             sa.printLastBatchStats();
-            prevBatchMeanTime = sa.meanTime.getValue();
+
+            prevBatchMeanTime = sa.mean.getValue();
         }
     }
 
@@ -63,8 +64,8 @@ public abstract class DoublingRatioTestV2{
     protected class StatsAccumulator {
         private final double batchSize;
         private final double prevBatchMeanTime;
-        private double timeSquaredDeviationsSum;
-        private Stat meanTime = new Stat("mean");
+        private double squaredDeviationsSum;
+        private Stat mean = new Stat("mean");
         private Stat meanRatio = new Stat("mean ratio");
         private Stat standardDeviation = new Stat("stddev.");
         private Stat coefficientOfVariation = new Stat("CV");
@@ -73,6 +74,15 @@ public abstract class DoublingRatioTestV2{
         public StatsAccumulator(int batchSize, double prevBatchMeanTime) {
             this.batchSize = batchSize;
             this.prevBatchMeanTime = prevBatchMeanTime;
+        }
+
+        public void add(double time) {
+            n++;
+            double m = mean.getValue();
+            squaredDeviationsSum += (n-1) / n * (time - m) * (time - m);
+            mean.setValue(m * ((n-1)/n) + time/n);
+            meanRatio.setValue(meanRatio.getValue() * ((n-1)/n) + time/(n*prevBatchMeanTime));
+
         }
 
         public void printHeader() {
@@ -92,32 +102,25 @@ public abstract class DoublingRatioTestV2{
         public void printLastBatchStats() {
             Stat[] statsToDisplay = statsToDisplay();
 
-            out.printf("%.5f", statsToDisplay[1].value);
+            out.printf("%.5f", statsToDisplay[0].getValue());
 
             for (int i = 1; i < statsToDisplay.length; i++) {
                 Stat s = statsToDisplay[i];
-                out.printf("\t%.5f", s.value);
+                out.printf("\t%.5f", s.getValue());
             }
 
             out.println("");
         }
 
-        public void add(double time) {
-            n++;
-            double m = meanTime.getValue();
-            timeSquaredDeviationsSum += (n-1) / n * (time - m) * (time - m);
-            meanTime.setValue(m * ((n-1)/n) + time/n);
-            meanRatio.setValue(meanRatio.getValue() * ((n-1)/n) + time/(n*prevBatchMeanTime));
-        }
-
-        public void computeStats() {
+        public void onBatchFinished() {
             computestandardDeviation();
             computeCoefficientOfVariation();
+            squaredDeviationsSum = 0;
         }
 
         protected Stat[] statsToDisplay() {
             return new Stat[] {
-                meanTime,
+                mean,
                 meanRatio,
                 standardDeviation,
                 coefficientOfVariation
@@ -125,7 +128,7 @@ public abstract class DoublingRatioTestV2{
         }
 
         private void computestandardDeviation() {
-            double timeVariance = timeSquaredDeviationsSum / (batchSize-1);
+            double timeVariance = squaredDeviationsSum / (batchSize-1);
             double value = timeVariance / (batchSize-1);
             standardDeviation.setValue(value);
         }
@@ -139,7 +142,6 @@ public abstract class DoublingRatioTestV2{
     protected static class Stat {
         private String label;
         private double value = -1;
-        private boolean isSet = false;
 
         public Stat(String label) {
             this.label = label;
@@ -148,17 +150,14 @@ public abstract class DoublingRatioTestV2{
         public Stat(String label, double value){
             this.label = label;
             this.value = value;
-            this.isSet = true;
         }
 
         public void setValue(double value) {
             this.value = value;
-            this.isSet = true;
         }
 
         public double getValue() { return this.value; }
         public String label() { return label; }
-        public boolean isSet() { return isSet; }
     }
 
     public static void main(String[] args) {
@@ -167,6 +166,7 @@ public abstract class DoublingRatioTestV2{
 
     private static class DoublingRatioTestV2Test {
         private static final int RUNS_PER_BATCH = 5;
+        private static final double BASE_TIME = 10;
         private final static OutputInterceptor outputInterceptor = new OutputInterceptor();
 
         public static void main(String[] args) {
@@ -224,6 +224,7 @@ public abstract class DoublingRatioTestV2{
 
         private static void assertOutputIsCorrect() {
             String[] outputLines = outputInterceptor.contents().split("\n");
+
             assertPrintedHeaderCorrectly(outputLines);
             assertPrintedStatsCorrectly(outputLines);
         }
@@ -238,15 +239,29 @@ public abstract class DoublingRatioTestV2{
         private static void assertPrintedStatsCorrectly(String[] outputLines) {
             assert outputLines.length > 1;
 
-            for (int batchNumber = 1; batchNumber < outputLines.length; batchNumber++)
-                assertPrintedStatsCorrectly(outputLines[batchNumber], batchNumber);
+            for (
+                int batchNumber = 0;
+                batchNumber < outputLines.length-1;
+                batchNumber++
+            )
+                assertPrintedStatsCorrectly(
+                    outputLines[batchNumber+1],
+                    batchNumber
+                );
         }
 
         private static void assertPrintedStatsCorrectly(String line, int batchNumber) {
             String[] parts = line.split("\\s+");
 
-            System.out.println("===");
-            System.out.println(Arrays.toString(parts));
+            double mean = Double.parseDouble(parts[0]);
+            double expectedMean =
+               BASE_TIME * Math.pow(2, batchNumber-1) * (RUNS_PER_BATCH + 1);
+
+            Test.assertEqual(mean, expectedMean);
+
+            // double meanRatio = Double.parseDouble(parts[1]);
+            // double stddev = Double.parseDouble(parts[2]);
+            // double coefficientOfVariation = Double.parseDouble(parts[3]);
         }
 
         private static class TestTest extends DoublingRatioTestV2 {
@@ -290,13 +305,12 @@ public abstract class DoublingRatioTestV2{
         private static class TestStopwatch implements Stopwatch {
             int batchNumber = 0; // zero-indexed
             int i = 0;
-            long baseTime = 10;
 
             double x = 0;
 
             // Simulate quadratic complexity
             public long elapsedTime() {
-                long result = (long) (baseTime * (i+1) * Math.pow(2, batchNumber));
+                long result = (long) (BASE_TIME * (i+1) * Math.pow(2, batchNumber));
 
                 if (i == RUNS_PER_BATCH-1) { i = 0; batchNumber++; x = 0; }
                 else i++;
