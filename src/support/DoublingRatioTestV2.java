@@ -25,7 +25,7 @@ public abstract class DoublingRatioTestV2{
         double prevBatchMeanTime = -1;
 
         for (int N = initialN(); N > 0; N *= 2) {
-            StatsAccumulator sa = new StatsAccumulator(N, prevBatchMeanTime);
+            StatsAccumulator sa = new StatsAccumulator(runsPerBatch, prevBatchMeanTime);
             if (N == initialN()) sa.printHeader();
             beforeBatch(N, runsPerBatch);
             sa = runBatch(N, runsPerBatch, sa);
@@ -67,7 +67,7 @@ public abstract class DoublingRatioTestV2{
         private double squaredDeviationsSum;
         private Stat mean = new Stat("mean");
         private Stat meanRatio = new Stat("mean ratio");
-        private Stat standardDeviation = new Stat("stddev.");
+        private Stat sampleStandardDeviation = new Stat("stddev.");
         private Stat coefficientOfVariation = new Stat("CV");
         private double n;
 
@@ -82,7 +82,6 @@ public abstract class DoublingRatioTestV2{
             squaredDeviationsSum += (n-1) / n * (time - m) * (time - m);
             mean.setValue(m * ((n-1)/n) + time/n);
             meanRatio.setValue(meanRatio.getValue() * ((n-1)/n) + time/(n*prevBatchMeanTime));
-
         }
 
         public void printHeader() {
@@ -113,28 +112,30 @@ public abstract class DoublingRatioTestV2{
         }
 
         public void onBatchFinished() {
-            computestandardDeviation();
+            computeSampleStandardDeviation();
+            System.out.println("sampleStandardDeviation: " + sampleStandardDeviation.getValue());
             computeCoefficientOfVariation();
-            squaredDeviationsSum = 0;
         }
 
         protected Stat[] statsToDisplay() {
             return new Stat[] {
                 mean,
                 meanRatio,
-                standardDeviation,
+                sampleStandardDeviation,
                 coefficientOfVariation
             };
         }
 
-        private void computestandardDeviation() {
-            double timeVariance = squaredDeviationsSum / (batchSize-1);
-            double value = timeVariance / (batchSize-1);
-            standardDeviation.setValue(value);
+        private void computeSampleStandardDeviation() {
+            System.out.println("squaredDeviationsSum: " + squaredDeviationsSum);
+            double sampleVariance = squaredDeviationsSum / (batchSize-1);
+            System.out.println("sampleVariance: " + sampleVariance);
+            double value = Math.sqrt(sampleVariance);
+            sampleStandardDeviation.setValue(value);
         }
 
         private void computeCoefficientOfVariation() {
-            double value = standardDeviation.getValue() / meanRatio.getValue();
+            double value = sampleStandardDeviation.getValue() / mean.getValue();
             coefficientOfVariation.setValue(value);
         }
     }
@@ -264,7 +265,7 @@ public abstract class DoublingRatioTestV2{
                 Test.assertEqual(meanRatio, 2);
             }
 
-            double stddev = Double.parseDouble(parts[2]);
+            double sampleStandardDeviation = Double.parseDouble(parts[2]);
             // double coefficientOfVariation = Double.parseDouble(parts[3]);
         }
 
