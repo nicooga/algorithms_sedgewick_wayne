@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import edu.princeton.cs.algs4.StdRandom;
 
 // For each `N = initialN() * 2^b`, run an experiment `runsPerBatch` times, passing `N` as a parameter for the experiment. 
@@ -113,7 +115,6 @@ public abstract class DoublingRatioTestV2{
 
         public void onBatchFinished() {
             computeSampleStandardDeviation();
-            System.out.println("sampleStandardDeviation: " + sampleStandardDeviation.getValue());
             computeCoefficientOfVariation();
         }
 
@@ -127,9 +128,7 @@ public abstract class DoublingRatioTestV2{
         }
 
         private void computeSampleStandardDeviation() {
-            System.out.println("squaredDeviationsSum: " + squaredDeviationsSum);
             double sampleVariance = squaredDeviationsSum / (batchSize-1);
-            System.out.println("sampleVariance: " + sampleVariance);
             double value = Math.sqrt(sampleVariance);
             sampleStandardDeviation.setValue(value);
         }
@@ -254,19 +253,43 @@ public abstract class DoublingRatioTestV2{
         private static void assertPrintedStatsCorrectly(String line, int batchNumber) {
             String[] parts = line.split("\\s+");
 
-            System.out.println(Arrays.toString(parts));
-
             double mean = Double.parseDouble(parts[0]);
-            double expectedMean =
-               BASE_TIME * Math.pow(2, batchNumber-1) * (RUNS_PER_BATCH + 1);
-
-            if (batchNumber > 0) {
-                double meanRatio = Double.parseDouble(parts[1]);
-                Test.assertEqual(meanRatio, 2);
-            }
-
+            double meanRatio = Double.parseDouble(parts[1]);
             double sampleStandardDeviation = Double.parseDouble(parts[2]);
-            // double coefficientOfVariation = Double.parseDouble(parts[3]);
+            double coefficientOfVariation = Double.parseDouble(parts[3]);
+
+            Test.assertEqual(mean, expectedMean(batchNumber));
+
+            if (batchNumber > 0) Test.assertEqual(meanRatio, 2);
+
+            Test.assertEqual(
+                sampleStandardDeviation,
+                expectedSampleStandardDeviation(batchNumber)
+            );
+
+            Test.assertEqual(coefficientOfVariation, 0.53);
+
+            System.out.println(Arrays.toString(parts));
+        }
+
+        private static double expectedMean(int batchNumber) {
+            return BASE_TIME * Math.pow(2, batchNumber-1) * (RUNS_PER_BATCH + 1);
+        }
+
+        private static double expectedSampleStandardDeviation(int batchNumber) {
+            int b = batchNumber;
+            int B = RUNS_PER_BATCH;
+            double Ts = BASE_TIME;
+
+            return round(Ts * Math.pow(2, b-1) * Math.sqrt((1/3.0) * B * (B+1)), 2);
+        }
+
+        public static double round(double value, int places) {
+            if (places < 0) throw new IllegalArgumentException();
+
+            BigDecimal bd = BigDecimal.valueOf(value);
+            bd = bd.setScale(places, RoundingMode.HALF_UP);
+            return bd.doubleValue();
         }
 
         private static class TestTest extends DoublingRatioTestV2 {
