@@ -3,11 +3,14 @@ package algsex.chapter1.section5;
 import java.util.*;
 import edu.princeton.cs.algs4.*;
 import algsex.chapter1.section5.Exercise17.ErdosRenyi;
-import algsex.support.DoublingRatioTestV2;
+
 import algsex.misc.UnionFind;
 import algsex.misc.UnionFindViaQuickFind;
 import algsex.misc.UnionFindViaQuickUnion;
 import algsex.misc.UnionFindViaWeightedQuickUnion;
+
+import algsex.support.doubling_ratio_testing.DoublingRatioTestV2;
+import algsex.support.doubling_ratio_testing.RunDetails;
 
 // 1.5.22 Doubling test for Erdös-Renyi model. Develop a performance-testing client that
 // takes an int value T from the command line and performs T trials of the following ex-
