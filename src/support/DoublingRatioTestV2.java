@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.DoubleSummaryStatistics;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.HashMap;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import edu.princeton.cs.algs4.StdRandom;
@@ -26,8 +28,10 @@ public abstract class DoublingRatioTestV2{
     private void doRun(int runsPerBatch) {
         double prevBatchMeanTime = -1;
 
+        printExperimentConfig(runsPerBatch);
+
         for (int N = initialN(); N > 0; N *= 2) {
-            StatsAccumulator sa = new StatsAccumulator(runsPerBatch, prevBatchMeanTime);
+            StatsAccumulator sa = initializeStatsAccumulator(runsPerBatch, prevBatchMeanTime);
             if (N == initialN()) sa.printHeader();
             beforeBatch(N, runsPerBatch);
             sa = runBatch(N, runsPerBatch, sa);
@@ -38,40 +42,61 @@ public abstract class DoublingRatioTestV2{
         }
     }
 
-    private StatsAccumulator runBatch(
-        int N,
-        int runsPerBatch,
-        StatsAccumulator StatsAccumulator
-    ) {
-        for (int i = 0; i < runsPerBatch; i++) {
-            double time = runExperiment(i, N, runsPerBatch);
-            StatsAccumulator.add(time);
-        }
-
-        return StatsAccumulator;
+    private void printExperimentConfig(int runsPerBatch) {
+        // TODO: uncomment this and fix corresponding tests
+        // out.printf("Running experiment \"%s\"\n", label());
+        // out.println("Runs per batch: " + runsPerBatch);
+        // out.println("===");
     }
 
-    private double runExperiment(int i, int N, int runsPerBatch) {
-        stopwatch.reset();
-        doRunExperiment(i, N, runsPerBatch);
-        return stopwatch.elapsedTime();
+    protected StatsAccumulator initializeStatsAccumulator(
+        int runsPerBatch,
+        double prevBatchMeanTime
+    ) {
+        return new StatsAccumulator(runsPerBatch, prevBatchMeanTime);
     }
 
     protected int initialN() { return 4; }
     protected int defaultRunsPerBatch() { return 4; }
     protected void beforeBatch(int N, int runsPerBatch) {}
 
-    protected abstract void doRunExperiment(int i, int N, int runsPerBatch);
+    protected abstract void doRunExperiment(int i, int N, int runsPerBatch, RunDetails d);
+
+    protected StatsAccumulator runBatch(
+        int N,
+        int runsPerBatch,
+        StatsAccumulator acc
+    ) {
+        for (int i = 0; i < runsPerBatch; i++) {
+            RunDetails d = runExperiment(i, N, runsPerBatch);
+            accumulateRunStats(acc, d);
+        }
+
+        return acc;
+    }
+
+    private RunDetails runExperiment(int i, int N, int runsPerBatch) {
+        RunDetails d = new RunDetails();
+        stopwatch.reset();
+        doRunExperiment(i, N, runsPerBatch, d);
+        double time = stopwatch.elapsedTime();
+        d.setDouble("time", time);
+        return d;
+    }
+
+    protected void accumulateRunStats(StatsAccumulator acc, RunDetails d) {
+        acc.add(d.getDouble("time"));
+    }
 
     protected class StatsAccumulator {
-        private final double batchSize;
-        private final double prevBatchMeanTime;
+        protected double batchSize;
+        protected double prevBatchMeanTime;
+        protected double n;
         private double squaredDeviationsSum;
         private Stat mean = new Stat("mean");
         private Stat meanRatio = new Stat("mean ratio");
         private Stat sampleStandardDeviation = new Stat("stddev.");
         private Stat coefficientOfVariation = new Stat("CV");
-        private double n;
 
         public StatsAccumulator(int batchSize, double prevBatchMeanTime) {
             this.batchSize = batchSize;
@@ -160,6 +185,16 @@ public abstract class DoublingRatioTestV2{
         public String label() { return label; }
     }
 
+    protected class RunDetails {
+        HashMap<String, Integer> integers = new HashMap<>();
+        HashMap<String, Double> doubles = new HashMap<>();
+
+        public void setInt(String key, int value) { integers.put(key, value); }
+        public int getInt(String key) { return integers.get(key); }
+        public void setDouble(String key, double value) { doubles.put(key, value); }
+        public double getDouble(String key) { return doubles.get(key); }
+    }
+
     public static void main(String[] args) {
         DoublingRatioTestV2Test.main(args);
     }
@@ -204,20 +239,25 @@ public abstract class DoublingRatioTestV2{
         }
 
         private static void assertDoRunExperimentCalledCorrectly(TestTest test) {
-            int testedBatches = 0;
+            int batchNumber = 0;
             int N = 4;
 
             while (N > 0) {
-                int offset = testedBatches * test.defaultRunsPerBatch();
+                int offset = batchNumber * test.defaultRunsPerBatch();
 
                 for (int i = 0; i < test.defaultRunsPerBatch(); i++) {
-                    Test.assertArrayEquals(
-                        test.doRunExperimentCalls.get(offset + i),
-                        new int[] { i, N, RUNS_PER_BATCH }
-                    );
+                    Object[] args = test.doRunExperimentCalls.get(offset + i);
+
+                    Test.assertEqual((int) args[0], i);
+                    Test.assertEqual((int) args[1], N);
+                    Test.assertEqual((int) args[2], RUNS_PER_BATCH);
+
+                    RunDetails d = (RunDetails) args[3];
+
+                    Test.assertEqual(d.getDouble("time"), expectedTime(batchNumber, i));
                 }
 
-                testedBatches++;
+                batchNumber++;
                 N *= 2;
             }
         }
@@ -272,6 +312,10 @@ public abstract class DoublingRatioTestV2{
             System.out.println(Arrays.toString(parts));
         }
 
+        private static double expectedTime(int batchNumber, int iteration) {
+            return BASE_TIME * (iteration+1) * Math.pow(2, batchNumber);
+        }
+
         private static double expectedMean(int batchNumber) {
             return BASE_TIME * Math.pow(2, batchNumber-1) * (RUNS_PER_BATCH + 1);
         }
@@ -293,15 +337,15 @@ public abstract class DoublingRatioTestV2{
         }
 
         private static class TestTest extends DoublingRatioTestV2 {
-            public List<int[]> doRunExperimentCalls = new ArrayList();
+            public List<Object[]> doRunExperimentCalls = new ArrayList();
             public List<int[]> beforeBatchCalls = new ArrayList();
 
             @Override
             protected String label() { return "test"; }
 
             @Override
-            protected void doRunExperiment(int i, int N, int runsPerBatch) {
-                doRunExperimentCalls.add(new int[] { i, N, runsPerBatch });
+            protected void doRunExperiment(int i, int N, int runsPerBatch, RunDetails d) {
+                doRunExperimentCalls.add(new Object[] { i, N, runsPerBatch, d });
             }
 
             @Override
