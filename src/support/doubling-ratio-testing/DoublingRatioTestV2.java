@@ -16,17 +16,21 @@ public abstract class DoublingRatioTestV2{
     }
 
     public void run(int runsPerBatch) {
-        doRun(runsPerBatch);
+        run(runsPerBatch, Integer.MAX_VALUE);
     }
 
-    private void doRun(int runsPerBatch) {
+    public void run(int runsPerBatch, int maxN) {
         double prevBatchMeanTime = -1;
 
         printExperimentConfig(runsPerBatch);
 
-        for (int N = initialN(); N > 0; N *= 2) {
-            StatsAccumulator acc = initializeStatsAccumulator(runsPerBatch, prevBatchMeanTime);
+        StatsAccumulator acc = null;
+
+        for (int N = initialN(); N <= maxN; N *= 2) {
+            acc = initializeStatsAccumulator(runsPerBatch, acc);
+
             if (N == initialN()) acc.printHeader();
+
             beforeBatch(N, runsPerBatch);
             acc = runBatch(N, runsPerBatch, acc);
             acc.onBatchFinished();
@@ -37,20 +41,20 @@ public abstract class DoublingRatioTestV2{
     }
 
     private void printExperimentConfig(int runsPerBatch) {
-        // TODO: uncomment this and fix corresponding tests
-        // out.printf("Running experiment \"%s\"\n", label());
-        // out.println("Runs per batch: " + runsPerBatch);
-        // out.println("===");
+        out.println("===");
+        out.printf("Running experiment \"%s\"\n", label());
+        out.println("Runs per batch: " + runsPerBatch);
+        out.println("===");
     }
 
     protected StatsAccumulator initializeStatsAccumulator(
         int runsPerBatch,
-        double prevBatchMeanTime
+        StatsAccumulator prevBatchStatsAcc
     ) {
-        return new DefaultStatsAccumulator(runsPerBatch, prevBatchMeanTime, out);
+        return new DefaultStatsAccumulator(runsPerBatch, prevBatchStatsAcc, out);
     }
 
-    protected int initialN() { return 4; }
+    protected int initialN() { return 1; }
     protected int defaultRunsPerBatch() { return 4; }
     protected void beforeBatch(int N, int runsPerBatch) {}
 

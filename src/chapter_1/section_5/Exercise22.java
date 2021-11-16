@@ -1,8 +1,13 @@
 package algsex.chapter1.section5;
 
 import java.util.*;
-import edu.princeton.cs.algs4.*;
+
+import edu.princeton.cs.algs4.StdOut;
+import edu.princeton.cs.algs4.StdRandom;
+
 import algsex.chapter1.section5.Exercise17.ErdosRenyi;
+
+import algsex.support.Out;
 
 import algsex.misc.UnionFind;
 import algsex.misc.UnionFindViaQuickFind;
@@ -10,7 +15,9 @@ import algsex.misc.UnionFindViaQuickUnion;
 import algsex.misc.UnionFindViaWeightedQuickUnion;
 
 import algsex.support.doubling_ratio_testing.DoublingRatioTestV2;
+import algsex.support.doubling_ratio_testing.DefaultStatsAccumulator;
 import algsex.support.doubling_ratio_testing.RunDetails;
+import algsex.support.doubling_ratio_testing.StatsAccumulator;
 
 // 1.5.22 Doubling test for Erdös-Renyi model. Develop a performance-testing client that
 // takes an int value T from the command line and performs T trials of the following ex-
@@ -21,12 +28,15 @@ import algsex.support.doubling_ratio_testing.RunDetails;
 // date the hypotheses in the text that the running times for quick-find and quick-union
 // are quadratic and weighted quick-union is near-linear.
 public class Exercise22 {
+    private static final int RUNS_PER_BATCH = 20;
     public static void main(String[] args) {
         int T = Integer.parseInt(args[0]);
 
-        new QuickFindTest().run(T);
-        new QuickUnionTest().run(T);
-        new WeightedQuickUnionTest().run(T);
+        int maxN = (int) Math.pow(2, T-1);
+
+        new QuickFindTest().run(RUNS_PER_BATCH, maxN);
+        new QuickUnionTest().run(RUNS_PER_BATCH, maxN);
+        new WeightedQuickUnionTest().run(RUNS_PER_BATCH, maxN);
     }
 
     private static class QuickFindTest extends BaseTest {
@@ -65,42 +75,78 @@ public class Exercise22 {
         @Override
         protected void doRunExperiment(int i, int N, int runsPerBatch, RunDetails d) {
             UnionFind uf = initializeUnionFind(N);
-            // int connectionCount = ErdosRenyi.count(N, uf);
-            // StdOut.printf("N: %d, connections: %d\n", N, connectionCount);
+            int connectionCount = ErdosRenyi.count(N, uf);
+            d.setInt("connectionCount", connectionCount);
+            System.gc();
         }
 
-        // protected DoublingRatioTestV2.StatsAccumulator initializeStatsAccumulator(
-        //     int runsPerBatch,
-        //     double prevBatchMeanTime
-        // ) {
-        //     return new CustomStatsAccumulator(runsPerBatch, prevBatchMeanTime);
-        // }
+        @Override
+        protected StatsAccumulator initializeStatsAccumulator(
+            int runsPerBatch,
+            StatsAccumulator prevBatchStatsAcc
+        ) {
+            return new CustomStatsAccumulator(runsPerBatch, prevBatchStatsAcc, out);
+        }
 
-        // private class CustomStatsAccumulator extends DoublingRatioTestV2.StatsAccumulator {
-        //     DoublingRatioTestV2.Stat averageConnections = new Stat("average connections");
+        private class CustomStatsAccumulator extends DefaultStatsAccumulator {
+            private CustomStatsAccumulator prevBatchStatsAcc;
+            private Stat meanConnections = new Stat("average connections");
+            private Stat meanTimePerConn = new Stat("mean time per conn.");
+            private Stat meanTimePerConnRatio = new Stat("time per conn. ratio");
 
-        //     public CustomStatsAccumulator(int batchSize, double prevBatchMeanTime) {
-        //         super(batchSize, prevBatchMeanTime);
-        //     }
 
-        //     @Override
-        //     protected Stat[] statsToDisplay() {
-        //         Stat[] stats = new Stat[super.statsToDisplay().length+1];
-        //         int index = 0;
-        //         for (Stat s : super.statsToDisplay()) stats[index++] = s;
-        //         stats[index++] = averageConnections;
-        //         return stats;
-        //     }
+            public CustomStatsAccumulator(
+                int batchSize,
+                StatsAccumulator prevBatchStatsAcc,
+                Out out
+            ) {
+                super(batchSize, prevBatchStatsAcc, out);
+                this.prevBatchStatsAcc = (CustomStatsAccumulator) prevBatchStatsAcc;
+            }
 
-        //     public void add(double time, int generatedConnections) {
-        //         super.add(time);
+            @Override
+            protected Stat[] statsToDisplay() {
+                Stat[] stats = new Stat[super.statsToDisplay().length+3];
+                int index = 0;
+                for (Stat s : super.statsToDisplay()) stats[index++] = s;
 
-        //         averageConnections.setValue(
-        //             averageConnections.getValue() * ((n-1)/n)
-        //             + generatedConnections/n
-        //         );
-        //     }
-        // }
+                stats[index++] = meanConnections;
+                stats[index++] = meanTimePerConn;
+                stats[index++] = meanTimePerConnRatio;
+
+                return stats;
+            }
+
+            @Override
+            public void add(RunDetails d) {
+                super.add(d);
+
+                int connectionCount = d.getInt("connectionCount");
+
+                meanConnections.setValue(
+                    meanConnections.getValue() * ((n-1)/n)
+                    + connectionCount/n
+                );
+            }
+
+            @Override
+            public void onBatchFinished() {
+                super.onBatchFinished();
+
+                meanTimePerConn.setValue(
+                    meanConnections.getValue() /
+                    mean.getValue()
+                );
+
+                if (prevBatchStatsAcc != null)
+                    meanTimePerConnRatio.setValue(
+                        meanTimePerConn.getValue() /
+                        prevBatchStatsAcc.meanTimePerConn()
+                    );
+            }
+
+            protected double meanTimePerConn() { return meanTimePerConn.getValue(); }
+        }
     }
 
     private static class ErdosRenyi {

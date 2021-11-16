@@ -3,18 +3,19 @@ import algsex.support.*;
 
 public class DefaultStatsAccumulator implements StatsAccumulator {
     protected double batchSize;
-    protected double prevBatchMeanTime;
+    protected StatsAccumulator prevBatchStatsAcc;
     protected double n;
+    protected Stat mean = new Stat("mean      ");
+    protected Stat meanRatio = new Stat("mean ratio");
+    protected Stat sampleStandardDeviation = new Stat("stddev.");
+    protected Stat coefficientOfVariation = new Stat("CV     ");
+
     private double squaredDeviationsSum;
-    private Stat mean = new Stat("mean");
-    private Stat meanRatio = new Stat("mean ratio");
-    private Stat sampleStandardDeviation = new Stat("stddev.");
-    private Stat coefficientOfVariation = new Stat("CV");
     private Out out = new StdOut();
 
-    public DefaultStatsAccumulator(int batchSize, double prevBatchMeanTime, Out out) {
+    public DefaultStatsAccumulator(int batchSize, StatsAccumulator prevBatchStatsAcc, Out out) {
         this.batchSize = batchSize;
-        this.prevBatchMeanTime = prevBatchMeanTime;
+        this.prevBatchStatsAcc = prevBatchStatsAcc;
         this.out = out;
     }
 
@@ -24,7 +25,12 @@ public class DefaultStatsAccumulator implements StatsAccumulator {
         double m = mean.getValue();
         squaredDeviationsSum += (n-1) / n * (time - m) * (time - m);
         mean.setValue(m * ((n-1)/n) + time/n);
-        meanRatio.setValue(meanRatio.getValue() * ((n-1)/n) + time/(n*prevBatchMeanTime));
+
+        if (prevBatchStatsAcc != null)
+            meanRatio.setValue(
+                meanRatio.getValue() * ((n-1)/n)
+                + time/(n*prevBatchStatsAcc.mean())
+            );
     }
 
     public void printHeader() {
@@ -44,11 +50,13 @@ public class DefaultStatsAccumulator implements StatsAccumulator {
     public void printLastBatchStats() {
         Stat[] statsToDisplay = statsToDisplay();
 
-        out.printf("%.2f", statsToDisplay[0].getValue());
+        for (int i = 0; i < statsToDisplay.length; i++) {
+            if (i > 0) out.print("\t");
 
-        for (int i = 1; i < statsToDisplay.length; i++) {
             Stat s = statsToDisplay[i];
-            out.printf("\t%.2f", s.getValue());
+            String value = String.format("%.2f", s.getValue());
+            String paddedValue = padRight(value, s.label().length());
+            out.print(paddedValue);
         }
 
         out.println("");
@@ -81,7 +89,18 @@ public class DefaultStatsAccumulator implements StatsAccumulator {
         coefficientOfVariation.setValue(value);
     }
 
-    private static class Stat {
+    private String padRight(String string, int length) {
+        assert string.length() <= length;
+
+        StringBuilder s = new StringBuilder(string);
+
+        for (int i = 0; i < length - string.length(); i++)
+            s.append(" ");
+
+        return s.toString();
+    }
+
+    protected static class Stat {
         private String label;
         private double value = -1;
 

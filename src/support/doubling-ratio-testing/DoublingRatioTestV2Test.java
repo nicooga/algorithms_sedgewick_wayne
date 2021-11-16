@@ -60,7 +60,10 @@ class DoublingRatioTestV2Test {
 
                 RunDetails d = (RunDetails) args[3];
 
-                Test.assertEqual(d.getDouble("time"), expectedTime(batchNumber, i));
+                Test.assertEqual(
+                    d.getDouble("time"),
+                    expectedTime(batchNumber, i)
+                );
             }
 
             batchNumber++;
