@@ -30,8 +30,7 @@ public class DoublingRatioTestV2 {
     }
 
     public void run() {
-        // TODO: replace with something
-        // printExperimentConfig(batchSize);
+        printExperimentConfig();
 
         BatchContext prevBatchContext = new BatchContext(out);
 
@@ -39,15 +38,11 @@ public class DoublingRatioTestV2 {
             prevBatchContext = runBatch(N, prevBatchContext);
     }
 
-    // private void printExperimentConfig(int batchSize) {
-    //     out.println("===");
-
-    //     // TODO: replace with experiment.label()
-    //     // out.printf("Running experiment \"%s\"\n", config.label);
-
-    //     out.println("Runs per batch: " + batchSize);
-    //     out.println("===");
-    // }
+    private void printExperimentConfig() {
+        out.printf("Running experiment \"%s\"\n", experiment.label());
+        out.println("Runs per batch: " + config.batchSize);
+        out.println("===");
+    }
 
     private BatchContext runBatch(
         int N,

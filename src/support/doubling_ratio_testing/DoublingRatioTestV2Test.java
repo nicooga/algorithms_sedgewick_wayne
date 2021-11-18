@@ -91,13 +91,19 @@ class DoublingRatioTestV2Test {
     private static void assertOutputIsCorrect() {
         String[] outputLines = outputInterceptor.contents().split("\n");
 
-        assertPrintedHeaderCorrectly(outputLines);
+        assertPrintedTestConfigCorrectly(outputLines);
+        assertPrintedBatchStatsHeaderCorrectly(outputLines);
         assertPrintedStatsCorrectly(outputLines);
     }
 
-    private static void assertPrintedHeaderCorrectly(String[] outputLines) {
+    private static void assertPrintedTestConfigCorrectly(String[] outputLines) {
+        Test.assertEqual(outputLines[0], "Running experiment \"test experiment\"");
+        Test.assertEqual(outputLines[1], "Runs per batch: 5");
+    }
+
+    private static void assertPrintedBatchStatsHeaderCorrectly(String[] outputLines) {
         Test.assertEqual(
-            outputLines[0],
+            outputLines[3],
             "mean        \tmean ratio\tstddev.   \tCV        \t"
         );
     }
@@ -105,13 +111,15 @@ class DoublingRatioTestV2Test {
     private static void assertPrintedStatsCorrectly(String[] outputLines) {
         assert outputLines.length > 1;
 
+        int offset = 4;
+
         for (
             int batchNumber = 0;
-            batchNumber < outputLines.length-1;
+            batchNumber + offset <= outputLines.length-1;
             batchNumber++
         )
             assertPrintedStatsCorrectly(
-                outputLines[batchNumber+1],
+                outputLines[batchNumber+offset],
                 batchNumber
             );
     }
@@ -134,8 +142,6 @@ class DoublingRatioTestV2Test {
         );
 
         Test.assertEqual(coefficientOfVariation, 0.53);
-
-        System.out.println(Arrays.toString(parts));
     }
 
     private static double expectedTime(int batchNumber, int iteration) {
@@ -198,7 +204,6 @@ class DoublingRatioTestV2Test {
 
         public void println(Object o) {
             println(o.toString());
-            if (verbose) System.out.println(o);
         }
 
         public void println(String s) {
