@@ -5,6 +5,10 @@ public class StdOut implements Out {
         edu.princeton.cs.algs4.StdOut.print(s);
     }
 
+    public void print(Object o) {
+        edu.princeton.cs.algs4.StdOut.print(o);
+    }
+
     public void println(Object o) {
         edu.princeton.cs.algs4.StdOut.println(o);
     }

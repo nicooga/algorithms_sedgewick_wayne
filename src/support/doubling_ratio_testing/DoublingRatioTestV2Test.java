@@ -6,62 +6,79 @@ import java.util.*;
 import algsex.support.*;
 
 class DoublingRatioTestV2Test {
-    private static final int RUNS_PER_BATCH = 5;
+    private static final int INITIAL_N = 4;
+    private static final int BATCH_SIZE = 5;
     private static final double BASE_TIME = 10;
     private final static OutputInterceptor outputInterceptor = new OutputInterceptor();
 
     public static void main(String[] args) {
-        TestTest test = setup();
-        test.run();
-        performAssertions(test);
+        TestContext context = setup();
+        context.test.run();
+        performAssertions(context);
         System.out.println("Tests passed");
     }
 
-    private static TestTest setup()  {
-        TestTest test = new TestTest();
-        test.out = outputInterceptor;
-        test.stopwatch = new TestStopwatch();
-        return test; 
+    private static TestContext setup() {
+        Config config = new Config();
+
+        config.initialN = INITIAL_N;
+        config.batchSize = BATCH_SIZE;
+
+        TestExperiment experiment = new TestExperiment();
+
+        DoublingRatioTestV2 test = new DoublingRatioTestV2(
+            config,
+            experiment,
+            outputInterceptor,
+            new TestStopwatch()
+        );
+
+        TestContext context = new TestContext();
+
+        context.test = test;
+        context.experiment = experiment;
+
+        return context;
     }
 
-    private static void performAssertions(TestTest test) {
-        assertBeforeBatchCalledCorrectly(test);
-        assertDoRunExperimentCalledCorrectly(test);
+    private static void performAssertions(TestContext context) {
+        assertBeforeBatchCalledCorrectly(context);
+        assertDoRunExperimentCalledCorrectly(context);
         assertOutputIsCorrect();
     }
 
-    private static void assertBeforeBatchCalledCorrectly(TestTest test) {
+    private static void assertBeforeBatchCalledCorrectly(TestContext context) {
         int index = 0;
         int N = 4;
 
         while (N > 0) {
             Test.assertArrayEquals(
-                test.beforeBatchCalls.get(index),
-                new int[] { N, RUNS_PER_BATCH }
+                context.experiment.beforeBatchCalls.get(index),
+                new int[] { N, BATCH_SIZE }
             );
             index++;
             N *= 2;
         }
     }
 
-    private static void assertDoRunExperimentCalledCorrectly(TestTest test) {
+    private static void assertDoRunExperimentCalledCorrectly(TestContext context) {
         int batchNumber = 0;
         int N = 4;
 
         while (N > 0) {
-            int offset = batchNumber * test.defaultRunsPerBatch();
+            int offset = batchNumber * BATCH_SIZE;
 
-            for (int i = 0; i < test.defaultRunsPerBatch(); i++) {
-                Object[] args = test.doRunExperimentCalls.get(offset + i);
+            for (int i = 0; i < BATCH_SIZE; i++) {
+                Object[] args = context.experiment.doRunExperimentCalls.get(offset + i);
 
                 Test.assertEqual((int) args[0], i);
                 Test.assertEqual((int) args[1], N);
-                Test.assertEqual((int) args[2], RUNS_PER_BATCH);
+                Test.assertEqual((int) args[2], BATCH_SIZE);
 
                 RunDetails d = (RunDetails) args[3];
 
                 Test.assertEqual(
-                    d.getDouble("time"),
+                    (double) d.get("time"),
                     expectedTime(batchNumber, i)
                 );
             }
@@ -81,7 +98,7 @@ class DoublingRatioTestV2Test {
     private static void assertPrintedHeaderCorrectly(String[] outputLines) {
         Test.assertEqual(
             outputLines[0],
-            "mean\tmean ratio\tstddev.\tCV"
+            "mean        \tmean ratio\tstddev.   \tCV        \t"
         );
     }
 
@@ -126,12 +143,12 @@ class DoublingRatioTestV2Test {
     }
 
     private static double expectedMean(int batchNumber) {
-        return BASE_TIME * Math.pow(2, batchNumber-1) * (RUNS_PER_BATCH + 1);
+        return BASE_TIME * Math.pow(2, batchNumber-1) * (BATCH_SIZE + 1);
     }
 
     private static double expectedSampleStandardDeviation(int batchNumber) {
         int b = batchNumber;
-        int B = RUNS_PER_BATCH;
+        int B = BATCH_SIZE;
         double Ts = BASE_TIME;
 
         return round(Ts * Math.pow(2, b-1) * Math.sqrt((1/3.0) * B * (B+1)), 2);
@@ -145,39 +162,54 @@ class DoublingRatioTestV2Test {
         return bd.doubleValue();
     }
 
-    private static class TestTest extends DoublingRatioTestV2 {
+    private static class TestExperiment extends Experiment {
         public List<Object[]> doRunExperimentCalls = new ArrayList();
         public List<int[]> beforeBatchCalls = new ArrayList();
 
         @Override
-        protected String label() { return "test"; }
+        protected String label() { return "test experiment"; }
 
         @Override
-        protected void doRunExperiment(int i, int N, int runsPerBatch, RunDetails d) {
-            doRunExperimentCalls.add(new Object[] { i, N, runsPerBatch, d });
+        protected void beforeBatch(int N, int batchSize) {
+            beforeBatchCalls.add(new int[] { N, batchSize });
         }
 
         @Override
-        protected void beforeBatch(int N, int runsPerBatch) {
-            beforeBatchCalls.add(new int[] { N, runsPerBatch });
-        }
+        protected RunDetails run(int i, int N, int batchSize, RunDetails d) {
+            doRunExperimentCalls.add(new Object[] { i, N, batchSize, d });
 
-        @Override
-        protected int defaultRunsPerBatch() { return RUNS_PER_BATCH; }
+            return d;
+        }
+    }
+
+    private static class TestContext {
+        DoublingRatioTestV2 test;
+        TestExperiment experiment;
     }
 
     private static class OutputInterceptor implements Out {
+        public boolean verbose = true;
         public StringBuffer contents = new StringBuffer();
 
-        public void print(String s) { contents.append(s); }
-        public void println(Object o) { println(o.toString()); }
+        public void print(Object s) {
+            contents.append(s);
+            if (verbose) System.out.print(s);
+        }
+
+        public void println(Object o) {
+            println(o.toString());
+            if (verbose) System.out.println(o);
+        }
+
         public void println(String s) {
             contents.append(s);
             contents.append("\n");
+            if (verbose) System.out.println(s);
         }
 
         public void printf(String s, Object... args) {
             contents.append(String.format(s, args));
+            if (verbose) System.out.printf(s, args);
         }
 
         public String contents() { return contents.toString(); }
@@ -193,7 +225,7 @@ class DoublingRatioTestV2Test {
         public long elapsedTime() {
             long result = (long) (BASE_TIME * (i+1) * Math.pow(2, batchNumber));
 
-            if (i == RUNS_PER_BATCH-1) { i = 0; batchNumber++; x = 0; }
+            if (i == BATCH_SIZE-1) { i = 0; batchNumber++; x = 0; }
             else i++;
 
             return result;
