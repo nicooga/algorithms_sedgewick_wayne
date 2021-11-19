@@ -6,5 +6,5 @@ public class Config {
     public int initialN = 2;
     public int batchSize = 2;
     public int maxN = Integer.MAX_VALUE;
-    public ArrayList<String> extraAttributesToAccumulateAndDisplay = new ArrayList<>();
+    public final ArrayList<String> extraAttributesToAccumulateAndDisplay = new ArrayList<>();
 }

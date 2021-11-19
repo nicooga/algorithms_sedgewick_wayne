@@ -13,4 +13,5 @@ public abstract class Experiment {
     protected int initialN() { return 1; }
     protected int defaultbatchSize() { return 4; }
     protected void beforeBatch(int N, int batchSize) {}
+    protected void afterExperiment(int N, int i, int batchSize, RunDetails d) {}
 }

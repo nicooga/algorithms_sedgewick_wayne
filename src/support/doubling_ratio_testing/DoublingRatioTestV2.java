@@ -51,7 +51,7 @@ public class DoublingRatioTestV2 {
         BatchContext context = new BatchContext(N, config, prevBatchContext, out);
 
         if (N == config.initialN) printBatchStatsHeader(context);
-        experiment.beforeBatch(N, config.batchSize);
+        experiment.beforeBatch(context.N(), config.batchSize);
         doRunBatch(context);
         onBatchFinished(context);
         printBatchStats(context);
@@ -60,13 +60,17 @@ public class DoublingRatioTestV2 {
     }
 
     private void doRunBatch(BatchContext context) {
-        for (int i = 0; i < context.batchSize(); i++) {
-            RunDetails d = runExperiment(context, i);
-            accumulateStats(context, d);
-        }
+        for (int i = 0; i < context.batchSize(); i++)
+            runExperiment(context, i);
     }
 
-    private RunDetails runExperiment(BatchContext context, int i) {
+    private void runExperiment(BatchContext context, int i) {
+        RunDetails d = doRunExperiment(context, i);
+        experiment.afterExperiment(context.N(), i, config.batchSize, d);
+        accumulateStats(context, d);
+    }
+
+    private RunDetails doRunExperiment(BatchContext context, int i) {
         RunDetails d = new RunDetails();
         stopwatch.reset();
         d = experiment.run(i, context.N(), context.batchSize(), d);
