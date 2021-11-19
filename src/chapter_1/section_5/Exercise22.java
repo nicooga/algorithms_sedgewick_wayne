@@ -19,6 +19,9 @@ import algsex.support.doubling_ratio_testing.*;
 // processed, and the ratio of the running time to the previous. Use your program to vali-
 // date the hypotheses in the text that the running times for quick-find and quick-union
 // are quadratic and weighted quick-union is near-linear.
+
+// Conclusion: experiment results show that time per generated connection has a ratio 2 for the quick-union and quick-find.
+// weighted-quick-union shows a ratio of 1, validating the hypotheses.
 public class Exercise22 {
     private static final int BATCH_SIZE = 20;
 
@@ -54,7 +57,9 @@ public class Exercise22 {
 
         config.maxN = maxN;
         config.batchSize = BATCH_SIZE;
+
         config.extraAttributesToAccumulateAndDisplay.add("timePerConnection");
+        config.extraAttributesToAccumulateAndDisplay.add("generatedConnections");
 
         Experiment experiment = new BaseExperiment(unionFindFactory, label);
         DoublingRatioTestV2 test = new DoublingRatioTestV2(config, experiment);
@@ -95,14 +100,14 @@ public class Exercise22 {
         @Override
         protected void afterExperiment(int N, int i, int batchSize, RunDetails d) {
             double time = (double) d.get("time");
-            int generatedConnections = (int) d.get("generatedConnections");
+            double generatedConnections = (double) d.get("generatedConnections");
             d.put("timePerConnection", time/generatedConnections);
         }
 
         @Override
         protected RunDetails run(int i, int N, int batchSize, RunDetails d) {
             UnionFind unionFind = unionFindFactory.build(N);
-            int connectionCount = ErdosRenyi.count(N, unionFind);
+            double connectionCount = ErdosRenyi.count(N, unionFind);
 
             d.put("generatedConnections", connectionCount);
 
