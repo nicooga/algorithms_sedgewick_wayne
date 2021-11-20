@@ -108,16 +108,16 @@ class BatchStatsPrinter {
             statsAccumulators.values().toArray(new StatsAccumulator[statsAccumulators.size()]);
 
         for (StatsAccumulator acc : accs) {
-            out.print("=");
-
-            for (Stat stat : acc.stats()) {
-                for (int i = 0; i < stat.minLength() - 1; i++) out.print("=");
-                out.print("===");
+            for (int i = 0; i < acc.stats().length; i++) {
+                Stat stat = acc.stats()[i];
+                printTimes("=", stat.minLength() + 3);
             }
-
-            out.print("==|");
         }
 
         out.print("\n");
+    }
+
+    private void printTimes(String s, int times) {
+        for (int i = 0; i < times; i++) out.print(s);
     }
 }

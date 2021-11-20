@@ -7,13 +7,15 @@ public class DefaultStatsAccumulator implements StatsAccumulator {
     protected double batchSize;
     protected double prevBatchMeanValue;
     protected double n;
-    protected Stat mean = new Stat("mean", 0, 12);
-    protected Stat meanRatio = new Stat("mean ratio", 1, 10);
-    protected Stat sampleStandardDeviation = new Stat("stddev.", 2, 10);
-    protected Stat coefficientOfVariation = new Stat("CV", 3, 10);
+    protected Stat N = new Stat("N", 0, 13);
+    protected Stat mean = new Stat("mean", 1, 15);
+    protected Stat meanRatio = new Stat("mean ratio", 2, 10);
+    protected Stat sampleStandardDeviation = new Stat("stddev.", 3, 15);
+    protected Stat coefficientOfVariation = new Stat("CV", 4, 10);
 
     private double squaredDeviationsSum;
     private Stat[] stats = new Stat[] {
+        N,
         mean,
         meanRatio,
         sampleStandardDeviation,
@@ -21,9 +23,11 @@ public class DefaultStatsAccumulator implements StatsAccumulator {
     };
 
     public void initialize(
+        int N,
         int batchSize,
         double prevBatchMeanValue
     ) {
+        this.N.setValue(N);
         this.batchSize = batchSize;
         this.prevBatchMeanValue = prevBatchMeanValue;
     }

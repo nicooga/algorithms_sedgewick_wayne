@@ -4,6 +4,7 @@ import algsex.support.*;
 
 public interface StatsAccumulator {
     public void initialize(
+        int N,
         int batchSize,
         double prevBatchMeanTime
     );

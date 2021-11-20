@@ -30,14 +30,14 @@ public class Exercise22 {
         int maxN = (int) Math.pow(2, T-1);
 
         runExperiment(
-            new UnionFindViaQuickUnionFactory(),
-            "quick union",
+            new UnionFindViaQuickFindFactory(),
+            "quick find",
             maxN
         );
 
         runExperiment(
-            new UnionFindViaQuickFindFactory(),
-            "quick find",
+            new UnionFindViaQuickUnionFactory(),
+            "quick union",
             maxN
         );
 
@@ -67,15 +67,15 @@ public class Exercise22 {
         test.run();
     }
 
-    private static class UnionFindViaQuickUnionFactory implements UnionFindFactory {
+    public static class UnionFindViaQuickFindFactory implements UnionFindFactory {
         public UnionFind build(int N) {
-            return new UnionFindViaQuickUnion(N);
+            return new UnionFindViaQuickFind(N);
         }
     }
 
-    private static class UnionFindViaQuickFindFactory implements UnionFindFactory {
+    public static class UnionFindViaQuickUnionFactory implements UnionFindFactory {
         public UnionFind build(int N) {
-            return new UnionFindViaQuickFind(N);
+            return new UnionFindViaQuickUnion(N);
         }
     }
 
@@ -115,7 +115,7 @@ public class Exercise22 {
         }
     }
 
-    private interface UnionFindFactory {
+    public interface UnionFindFactory {
         public UnionFind build(int N);
     }
 

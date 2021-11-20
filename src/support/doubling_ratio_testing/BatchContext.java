@@ -56,7 +56,7 @@ class BatchContext {
 
         double prevBatchMean = prevBatchAcc == null ? 0 : prevBatchAcc.mean();
 
-        acc.initialize(batchSize, prevBatchMean);
+        acc.initialize(N, batchSize, prevBatchMean);
 
         accumulators.put(statId, acc);
     }
