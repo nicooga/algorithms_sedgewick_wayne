@@ -27,7 +27,7 @@ public class Exercise13 {
         Exercise12.runDepthExperiment(new UnionFindViaWeightedQuickUnionWithPathCompression(16));
     }
 
-    private static class UnionFindViaWeightedQuickUnionWithPathCompression implements InstrumentedUnionFind {
+    public static class UnionFindViaWeightedQuickUnionWithPathCompression implements InstrumentedUnionFind {
         private int[] id;
         private int[] sz;
         private int count;

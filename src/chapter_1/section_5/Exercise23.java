@@ -21,30 +21,27 @@ public class Exercise23 {
 
     public static void main(String[] args) {
         int T = Integer.parseInt(args[0]);
-        Config config = experimentConfig(T);
-        ArrayList<Connection>[] connections = generateConections(T);
 
         runExperiment(
+            T,
             "quick-find",
-            new UnionFindViaQuickFindFactory(),
-            config,
-            connections
+            new UnionFindViaQuickFindFactory()
         );
 
         runExperiment(
+            T,
             "quick-union",
-            new UnionFindViaQuickUnionFactory(),
-            config,
-            connections
+            new UnionFindViaQuickUnionFactory()
         );
     }
 
-    private static void runExperiment(
+    public static void runExperiment(
+        int T,
         String label,
-        UnionFindFactory ufFactory,
-        Config config,
-        ArrayList<Connection>[] connections
+        UnionFindFactory ufFactory
     ) {
+        Config config = experimentConfig(T);
+        ArrayList<Connection>[] connections = generateConections(T);
         Experiment experiment = new BaseExperiment(label, ufFactory, connections);
         DoublingRatioTestV2 test = new DoublingRatioTestV2(config, experiment);
         test.run();
@@ -62,7 +59,7 @@ public class Exercise23 {
         return connectionLists;
     }
 
-    private static Config experimentConfig(int T) {
+    public static Config experimentConfig(int T) {
         int maxN = (int) Math.pow(2, T-1);
 
         Config config = new Config();
@@ -108,7 +105,7 @@ public class Exercise23 {
         }
     }
 
-    private static class ErdosRenyi {
+    public static class ErdosRenyi {
         public static Connection[] generate(int N) {
             UnionFind unionFind = new UnionFindViaWeightedQuickUnion(N);
             ArrayList<Connection> connections = new ArrayList<>();
@@ -124,7 +121,7 @@ public class Exercise23 {
         }
     }
 
-    private static class Connection {
+    public static class Connection {
         int p;
         int q;
 
