@@ -17,8 +17,6 @@ import algsex.chapter1.section5.Exercise23.ErdosRenyi;
 // Conclusion: results show with-compression version is consistently faster.
 public class Exercise24 {
     public static void main(String[] args) {
-        System.out.println(Runtime.getRuntime().maxMemory());
-
         int T = Integer.parseInt(args[0]);
 
         runExperiment(
@@ -39,23 +37,44 @@ public class Exercise24 {
         String label,
         UnionFindFactory ufFactory
     ) {
-        System.out.println(T);
+        runExperiment(T, label, ufFactory, new ErdosRenyiConnectionGenerator());
+    }
+
+    public static void runExperiment(
+        int T,
+        String label,
+        UnionFindFactory ufFactory,
+        ConnectionGenerator connectionGenerator
+    ) {
         Config config = Exercise23.experimentConfig(T);
-        Experiment experiment = new BaseExperiment(label, ufFactory);
+
+        config.extraAttributesToAccumulateAndDisplay.add("generated connections");
+
+        Experiment experiment =
+            new BaseExperiment(
+            label,
+            ufFactory,
+            connectionGenerator
+        );
+
         DoublingRatioTestV2 test = new DoublingRatioTestV2(config, experiment);
+
         test.run();
     }
 
-    private static class BaseExperiment extends Experiment {
+    public static class BaseExperiment extends Experiment {
         private final String label;
         private final UnionFindFactory unionFindFactory;
+        private final ConnectionGenerator connectionGenerator;
 
         public BaseExperiment(
             String label,
-            UnionFindFactory unionFindFactory
+            UnionFindFactory unionFindFactory,
+            ConnectionGenerator connectionGenerator
         ) {
             this.label = label;
             this.unionFindFactory = unionFindFactory;
+            this.connectionGenerator = connectionGenerator;
         }
 
         @Override
@@ -65,7 +84,7 @@ public class Exercise24 {
         protected RunDetails run(int i, int N, int batchSize, RunDetails d) {
             UnionFind unionFind = unionFindFactory.build(N);
             int lgN = (int) (Math.log(N) / Math.log(2));
-            Connection[] batchConnections = ConnectionGenerator.generate(N);
+            Connection[] batchConnections = connectionGenerator.generate(N);
 
             for (Connection c : batchConnections)
                 if (!unionFind.connected(c.q, c.p))
@@ -77,7 +96,7 @@ public class Exercise24 {
         }
     }
 
-    private static class UnionFindViaWeightedQuickUnionFactory implements UnionFindFactory {
+    public static class UnionFindViaWeightedQuickUnionFactory implements UnionFindFactory {
         public UnionFind build(int N) {
             return new UnionFindViaWeightedQuickUnion(N);
         }
@@ -89,11 +108,11 @@ public class Exercise24 {
         }
     }
 
-    private static class ConnectionGenerator {
+    private static class ErdosRenyiConnectionGenerator implements ConnectionGenerator {
         private static int lastN = -1;
         private static Connection[] cachedConnections;
 
-        private static Connection[] generate(int N) {
+        public Connection[] generate(int N) {
             if (N != lastN) {
                 cachedConnections = ErdosRenyi.generate(N);
                 lastN = N;
@@ -101,5 +120,9 @@ public class Exercise24 {
 
             return cachedConnections;
         }
+    }
+
+    public interface ConnectionGenerator {
+        public Connection[] generate(int N);
     }
 }
