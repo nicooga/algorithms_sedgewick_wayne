@@ -99,19 +99,35 @@ class DoublingRatioTestV2Test {
     private static void assertPrintedTestConfigCorrectly(String[] outputLines) {
         Test.assertEqual(outputLines[0], "Running experiment \"test experiment\"");
         Test.assertEqual(outputLines[1], "Runs per batch: 5");
+        Test.assertEqual(outputLines[2], "===");
     }
 
     private static void assertPrintedBatchStatsHeaderCorrectly(String[] outputLines) {
         Test.assertEqual(
             outputLines[3],
-            "mean        \tmean ratio\tstddev.   \tCV        \t"
+            "| time                                                                        | "
+        );
+
+        Test.assertEqual(
+            outputLines[4],
+            "|=============================================================================="
+        );
+
+        Test.assertEqual(
+            outputLines[5],
+            "| N             | mean            | mean ratio | stddev.         | CV         | "
+        );
+
+        Test.assertEqual(
+            outputLines[6],
+            "|=============================================================================="
         );
     }
 
     private static void assertPrintedStatsCorrectly(String[] outputLines) {
         assert outputLines.length > 1;
 
-        int offset = 4;
+        int offset = 7;
 
         for (
             int batchNumber = 0;
@@ -125,12 +141,12 @@ class DoublingRatioTestV2Test {
     }
 
     private static void assertPrintedStatsCorrectly(String line, int batchNumber) {
-        String[] parts = line.split("\\s+");
+        String[] parts = line.split("\\s*\\|\\s*");
 
-        double mean = Double.parseDouble(parts[0]);
-        double meanRatio = Double.parseDouble(parts[1]);
-        double sampleStandardDeviation = Double.parseDouble(parts[2]);
-        double coefficientOfVariation = Double.parseDouble(parts[3]);
+        double mean = Double.parseDouble(parts[2]);
+        double meanRatio = Double.parseDouble(parts[3]);
+        double sampleStandardDeviation = Double.parseDouble(parts[4]);
+        double coefficientOfVariation = Double.parseDouble(parts[5]);
 
         Test.assertEqual(mean, expectedMean(batchNumber));
 
@@ -194,7 +210,7 @@ class DoublingRatioTestV2Test {
     }
 
     private static class OutputInterceptor implements Out {
-        public boolean verbose = true;
+        public boolean verbose = System.getenv("VERBOSE") != null;
         public StringBuffer contents = new StringBuffer();
 
         public void print(Object s) {
