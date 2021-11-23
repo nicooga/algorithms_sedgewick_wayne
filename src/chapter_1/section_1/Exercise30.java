@@ -6,38 +6,31 @@ import edu.princeton.cs.algs4.*;
 // a[][] such that a[i][j] is true if i and j are relatively prime (have no common factors),
 // and false otherwise.
 public class Exercise30 {
-  public
+  public static void main(String[] args) {
+    int N = Integer.parseInt(args[0]);
 
-  static void main(String[] args) {
-    int width = Integer.parseInt(args[0]);
-    int height = Integer.parseInt(args[1]);
+    boolean[][] coprimesMatrix = new boolean[N][N];
 
-    boolean[][] coprimesMatrix = new boolean[height][width];
-
-    for (int i = 0; i < height; i++) {
-      int rowNumber = i + 2;
-
-      for (int j = 0; j < width; j++) {
-        int columnNumber = j + 2;
-
-        coprimesMatrix[i][j] = coprime(rowNumber, columnNumber);
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        coprimesMatrix[i][j] = coprime(i, j);
       }
     }
 
-    printMatrix(coprimesMatrix, 2);
+    printMatrix(coprimesMatrix, 0);
   }
 
-  static boolean coprime(int a, int b) {
+  private static boolean coprime(int a, int b) {
     return gcd(a, b) == 1;
   }
 
-  static int gcd(int p, int q) {
+  private static int gcd(int p, int q) {
     if (q == 0) return p;
     int r = p % q;
     return gcd(q, r);
   }
 
-  static void printMatrix(boolean[][] matrix, int labelOffset) {
+  private static void printMatrix(boolean[][] matrix, int labelOffset) {
     int cols = matrix.length;
 
     printHeader(cols, labelOffset);
@@ -47,7 +40,7 @@ public class Exercise30 {
     }
   }
 
-  static void printHeader(int rows, int labelOffset) {
+  private static void printHeader(int rows, int labelOffset) {
     String header = "    |";
     String divider = "====|";
 
@@ -60,7 +53,7 @@ public class Exercise30 {
     StdOut.println(divider);
   }
 
-  static void printRow(boolean[][] matrix, int row, int labelOffset) {
+  private static void printRow(boolean[][] matrix, int row, int labelOffset) {
     int cols = matrix[row].length;
 
     StdOut.printf(" %2d |", row + labelOffset);
@@ -71,7 +64,7 @@ public class Exercise30 {
     StdOut.print("\n");
   }
 
-  static void printCell(boolean[][] matrix, int row, int col) {
+  private static void printCell(boolean[][] matrix, int row, int col) {
     boolean value = matrix[row][col];
     String representation = value ? "*" : " ";
     StdOut.printf(" %s  ", representation);

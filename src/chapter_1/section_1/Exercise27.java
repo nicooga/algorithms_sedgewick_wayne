@@ -12,9 +12,7 @@ public class Exercise27 {
     StdOut.printf("binomial(%d, %d, %s) is %s\n", N, k, p, result);
   }
 
-  private
-
-  static double binomial(int N, int k, double p) {
+  private static double binomial(int N, int k, double p) {
     double[][] cache = new double[N+1][k+1];
 
     for (int i = 0; i <= N; i++)
@@ -23,7 +21,7 @@ public class Exercise27 {
     return binomial(N, k, p, cache);
   }
 
-  static double binomial(int N, int k, double p, double[][] cache) {
+  private static double binomial(int N, int k, double p, double[][] cache) {
     if ((N == 0) && (k == 0)) return 1.0;
     if ((N < 0) || (k < 0)) return 0.0;
 

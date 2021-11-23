@@ -8,9 +8,7 @@ import edu.princeton.cs.algs4.*;
 // + to print numbers from standard input that are not in the whitelist, - to print
 // numbers that are in the whitelist.
 public class Exercise23 {
-  public
-
-  static void main(String[] args) {
+  public static void main(String[] args) {
     selectedBehaviour = args[0];
     whitelist = new int[args.length - 1];
 
@@ -26,12 +24,10 @@ public class Exercise23 {
     }
   }
 
-  private
+  private static String selectedBehaviour;
+  private static int[] whitelist;
 
-  static String selectedBehaviour;
-  static int[] whitelist;
-
-  static void performStrategy(int key) {
+  private static void performStrategy(int key) {
     switch(selectedBehaviour) {
       case "+":
         printNotWhitelisted(key);
@@ -44,19 +40,19 @@ public class Exercise23 {
     }
   }
 
-  static void printNotWhitelisted(int key) {
+  private static void printNotWhitelisted(int key) {
     if (!isWhitelisted(key)) StdOut.println(key);
   }
 
-  static void printWhitelisted(int key) {
+  private static void printWhitelisted(int key) {
     if (isWhitelisted(key)) StdOut.println(key);
   }
 
-  static boolean isWhitelisted(int key) {
+  private static boolean isWhitelisted(int key) {
     return rank(key, whitelist) != -1;
   }
 
-  static int rank(int key, int[] a) {
+  private static int rank(int key, int[] a) {
     int lo = 0;
     int hi = a.length - 1;
 

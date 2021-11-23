@@ -8,21 +8,17 @@ import edu.princeton.cs.algs4.*;
 // values lo and hi, indented by the depth of the recursion. Hint: Add an argument
 // to the recursive method that keeps track of the depth.
 public class Exercise22 {
-  public
-
-  static void main(String[] args) {
+  public static void main(String[] args) {
     int[] a = { 1, 2, 3, 4, 5, 6, 7, 8 ,9 , 10 ,11, 12, 13, 14, 15, 16, 17, 18, 19 ,20 };
     int key = 0;
     StdOut.printf("rank(%s, %d) returns: %d\n", Arrays.toString(a), key, rank(key, a));
   }
 
-  private
-
-  static int rank(int key, int[] a) {
+  private static int rank(int key, int[] a) {
     return rank(key, a, 0, a.length - 1, 0);
   }
 
-  static int rank(int key, int[] a, int lo, int hi, int recursionLevel) {
+  private static int rank(int key, int[] a, int lo, int hi, int recursionLevel) {
     trace(lo, hi, recursionLevel);
 
     // Index of key in a[], if present, is not smaller than lo
@@ -34,7 +30,7 @@ public class Exercise22 {
     else return mid;
   }
 
-  static void trace(int lo, int hi, int recursionLevel) {
+  private static void trace(int lo, int hi, int recursionLevel) {
     if (recursionLevel > 0)
       for (int i = 1; i <= recursionLevel; i++)
         StdOut.print("  ");

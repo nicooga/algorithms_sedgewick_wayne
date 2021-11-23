@@ -3,11 +3,13 @@ package algsex.chapter1.section1;
 import java.util.*;
 import edu.princeton.cs.algs4.*;
 
+// 1.1.38 Binary search versus brute-force search. Write a program BruteForceSearch
+// that uses the brute-force search method given on page 48 and compare its running time
+// on your computer with that of BinarySearch for largeW.txt and largeT.txt.
 public class Exercise38 {
   public static void main(String[] args) {
     int key = Integer.parseInt(args[0]);
     int[] ints = readIntsFromStdIn();
-    runBruteForceSearch(key, ints);
     runBruteForceSearch(key, ints);
   }
 

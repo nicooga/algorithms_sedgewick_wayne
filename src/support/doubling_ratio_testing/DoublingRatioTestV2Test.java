@@ -5,7 +5,7 @@ import java.math.*;
 import java.util.*;
 import algsex.support.*;
 
-class DoublingRatioTestV2Test {
+public class DoublingRatioTestV2Test {
     private static final int INITIAL_N = 4;
     private static final int BATCH_SIZE = 5;
     private static final double BASE_TIME = 10;
@@ -15,7 +15,6 @@ class DoublingRatioTestV2Test {
         TestContext context = setup();
         context.test.run();
         performAssertions(context);
-        System.out.println("Tests passed");
     }
 
     private static TestContext setup() {

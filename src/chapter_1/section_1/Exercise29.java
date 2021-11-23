@@ -10,9 +10,7 @@ import edu.princeton.cs.algs4.*;
 // by rank(key, a) and count(key, a) respectively, then a[i..i+j-1] are the values in
 // the array that are equal to key.
 public class Exercise29 {
-  public
-
-  static void main(String[] args) {
+  public static void main(String[] args) {
     int key = Integer.parseInt(args[0]);
     int[] a = new int[args.length - 1];
 
@@ -28,12 +26,10 @@ public class Exercise29 {
     StdOut.printf("count(key, a): %s\n", count(ranked, key, a));
   }
 
-  private
-
   // Add to BinarySearch a static method rank() that takes a key and
   // a sorted array of int values (some of which may be equal) as arguments and returns the
   // number of elements that are smaller than the key ...
-  static int rank(int key, int[] a) {
+  private static int rank(int key, int[] a) {
     if (key > a[a.length - 1]) return a.length;
 
     int lo = 0;
@@ -60,7 +56,7 @@ public class Exercise29 {
   // ... and a similar method count() that returns the number of elements equal to the key.
   // Note : If i and j are the values returned by rank(key, a) and count(key, a) respectively,
   // then a[i..i+j-1] are the values in the array that are equal to key.
-  static int count(int ranked, int key, int[] a) {
+  private static int count(int ranked, int key, int[] a) {
     if (ranked == -1) return 0;
 
     int result = 1;
