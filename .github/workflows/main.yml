@@ -27,4 +27,4 @@ jobs:
 
       - name: Run tests
         run: |
-          docker run --rm algsex bash -c 'direnv allow . && direnv exec . run algsex.TestRoot'
+          docker run --rm algsex bash -c 'direnv allow . && direnv exec . run algsex.MainTest'
