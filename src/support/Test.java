@@ -1,8 +1,13 @@
 package algsex.support;
 
 import java.util.Arrays;
+import java.lang.reflect.*;
+import java.io.ByteArrayInputStream;
+import edu.princeton.cs.algs4.StdIn;
 
 public class Test {
+    private static final String[] EMPTY_ARGS = new String[] {};
+
     public static void assertEqual(int actual, int expected) {
         assertEqual(actual, expected, String.format("Expected %s, but got %s", expected, actual));
     }
@@ -77,5 +82,23 @@ public class Test {
 
     public static void assertLessThanOrEqual(double actual, double expected, String message) {
         assert actual <= expected : message;
+    }
+
+    public static void simulateInput(String s) {
+        System.setIn(new ByteArrayInputStream(s.getBytes()));
+
+        // StdIn takes a reference to StdIn once.
+        // We need to call the private method `StdIn.resync()` to force it to use the new input.
+        try {
+            Method method = StdIn.class.getDeclaredMethod("resync");
+            method.setAccessible(true);
+            method.invoke(null);
+        } catch (Exception e) {
+            assert false : "Error while hacking StdIn.resync() method:\n" + e.getMessage();
+        }
+    }
+
+    public static String[] emptyArgs() {
+        return EMPTY_ARGS;
     }
 }

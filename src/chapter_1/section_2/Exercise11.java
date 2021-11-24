@@ -4,6 +4,8 @@ import java.util.*;
 import java.lang.*;
 import edu.princeton.cs.algs4.*;
 
+// 1.2.11 Develop an implementation SmartDate of our Date API that raises an excep-
+// tion if the date is not legal.
 public class Exercise11 {
   public static void main(String[] args) {
     if (args.length > 0) {

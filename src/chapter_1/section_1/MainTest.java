@@ -1,45 +1,43 @@
 package algsex.chapter1.section1;
 
-import java.io.*;
+import algsex.support.Test;
 
 public class MainTest {
-    private static final String[] EMPTY_ARGS = new String[] {};
-
     public static void main(String[] args) {
-        algsex.support.doubling_ratio_testing.DoublingRatioTestV2Test.main(EMPTY_ARGS);
+        algsex.support.doubling_ratio_testing.DoublingRatioTestV2Test.main(Test.emptyArgs());
 
-        Exercise1.main(EMPTY_ARGS);
-        Exercise2.main(EMPTY_ARGS);
+        Exercise1.main(Test.emptyArgs());
+        Exercise2.main(Test.emptyArgs());
         Exercise3.main(new String[] { "1", "2", "3" });
         Exercise3.main(new String[] { "3", "3", "3" });
-        Exercise4.main(EMPTY_ARGS);
+        Exercise4.main(Test.emptyArgs());
         Exercise5.main(new String[] { "0.1", "0.1" });
         Exercise5.main(new String[] { "1", "2" });
-        Exercise6.main(EMPTY_ARGS);
-        Exercise7.main(EMPTY_ARGS);
-        Exercise8.main(EMPTY_ARGS);
+        Exercise6.main(Test.emptyArgs());
+        Exercise7.main(Test.emptyArgs());
+        Exercise8.main(Test.emptyArgs());
         Exercise9.main(new String[] { "8" });
-        Exercise11.main(EMPTY_ARGS);
-        Exercise12.main(EMPTY_ARGS);
-        Exercise13.main(EMPTY_ARGS);
-        Exercise14.main(EMPTY_ARGS);
-        Exercise15.main(EMPTY_ARGS);
-        Exercise16.main(EMPTY_ARGS);
-        Exercise18.main(EMPTY_ARGS);
-        Exercise19.main(EMPTY_ARGS);
-        Exercise20.main(EMPTY_ARGS);
+        Exercise11.main(Test.emptyArgs());
+        Exercise12.main(Test.emptyArgs());
+        Exercise13.main(Test.emptyArgs());
+        Exercise14.main(Test.emptyArgs());
+        Exercise15.main(Test.emptyArgs());
+        Exercise16.main(Test.emptyArgs());
+        Exercise18.main(Test.emptyArgs());
+        Exercise19.main(Test.emptyArgs());
+        Exercise20.main(Test.emptyArgs());
 
-        simulateInput(
+        Test.simulateInput(
             "bob 10 12\n" +
             "greg 13 16\n" +
             "richard 13 16\n" +
             "carlos 12 23\n"
         );
-        Exercise21.main(EMPTY_ARGS);
+        Exercise21.main(Test.emptyArgs());
 
-        Exercise22.main(EMPTY_ARGS);
+        Exercise22.main(Test.emptyArgs());
 
-        simulateInput("1 2 3 4 5");
+        Test.simulateInput("1 2 3 4 5");
         Exercise23.main(new String[] { "+", "1" ,"2", "3", "4", "5" });
 
         Exercise24.main(new String[] { "1", "2" });
@@ -48,16 +46,12 @@ public class MainTest {
         Exercise29.main(new String[] { "1", "2", "3" });
         Exercise30.main(new String[] { "4" });
 
-        Exercise33.main(EMPTY_ARGS);
+        Exercise33.main(Test.emptyArgs());
         Exercise36.main(new String[] { "10", "5" });
 
-        simulateInput("1 2 3");
+        Test.simulateInput("1 2 3");
         Exercise38.main(new String[] { "3" });
 
         Exercise39.main(new String[] { "2" });
-    }
-
-    private static void simulateInput(String s) {
-        System.setIn(new ByteArrayInputStream(s.getBytes()));
     }
 }
