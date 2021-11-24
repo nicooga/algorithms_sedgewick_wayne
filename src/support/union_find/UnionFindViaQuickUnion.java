@@ -34,17 +34,19 @@ public class UnionFindViaQuickUnion implements UnionFind {
     }
 
     public static void main(String[] args) {
-        int N = StdIn.readInt();
-        UnionFind uf = new UnionFindViaQuickFind(N);
+        UnionFindFactory factory = new Factory();
 
-        while (!StdIn.isEmpty()) {
-            int p = StdIn.readInt();
-            int q = StdIn.readInt();
-            if (uf.connected(p, q)) continue;
-            uf.union(p, q);
-            StdOut.println(p + " " + q);
+        if (args.length > 0) {
+            UnionFindCLI.main(factory);
+            return;
         }
 
-        StdOut.println(uf.count() + " components");
+        UnionFindTest.runTest(factory);
+    }
+
+    public static class Factory implements UnionFindFactory {
+        public UnionFind generate(int N) {
+            return new UnionFindViaQuickUnion(N);
+        }
     }
 }
