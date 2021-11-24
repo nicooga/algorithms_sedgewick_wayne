@@ -4,6 +4,7 @@ import java.util.*;
 import edu.princeton.cs.algs4.*;
 import algsex.chapter1.section5.Exercise23.Connection;
 import algsex.support.union_find.*;
+import algsex.support.Plot;
 
 // 1.5.26 Amortized plot for Erdös-Renyi. Develop a client that takes an int value N from
 // the command line and does an amortized plot of the cost of all operations in the style
@@ -11,10 +12,16 @@ import algsex.support.union_find.*;
 // and N-1, calling connected() to determine if they are connected and then union() if
 // not (as in our development client), looping until all sites are connected.
 public class Exercise26 {
+    private static final Plot plot = new Plot();
+
     public static void main(String[] args) {
         int N = Integer.parseInt(args[0]);
-        UnionFind unionFind = new UnionFindViaWeightedQuickUnion(N);
-        ErdosRenyi.generate(N, unionFind);
+        // InstrumentedUnionFind unionFind = new UnionFindViaWeightedQuickUnion(N);
+        // Connection[] connections = ErdosRenyi.generate(N, unionFind);
+        // int index = 0;
+
+        // for (Connection c : connections)
+        //     Plot.add(index++, unionFind.arrayAccesses());
     }
 
     private static class ErdosRenyi {

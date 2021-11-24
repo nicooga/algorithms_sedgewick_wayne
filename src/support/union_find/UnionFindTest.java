@@ -12,15 +12,20 @@ public class UnionFindTest {
         runTest(new UnionFindViaQuickFind(SITES));
         runTest(new UnionFindViaQuickUnion(SITES));
         runTest(new UnionFindViaWeightedQuickUnion(SITES));
+    }
 
-        StdOut.println("Tests passed");
+    public static void runTest(UnionFindFactory factory) {
+        UnionFind unionFind = factory.generate(SITES);
+        runTest(unionFind);
     }
 
     public static void runTest(UnionFind uf) {
         runTest(uf, SITES);
+        StdOut.println("Union-find tests passed for " + uf.getClass());
     }
 
     public static void runTest(UnionFind uf, int sites) {
+
         for (int i = 0; i < SITES*3; i++) {
             int x = StdRandom.uniform(1, sites);
             int y = StdRandom.uniform(1, sites);
