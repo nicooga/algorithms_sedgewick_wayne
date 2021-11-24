@@ -25,6 +25,7 @@ public class UnionFindTest {
     }
 
     public static void runTest(UnionFind uf, int sites) {
+        Test.assertEqual(uf.count(), sites);
 
         for (int i = 0; i < SITES*3; i++) {
             int x = StdRandom.uniform(1, sites);
@@ -57,5 +58,11 @@ public class UnionFindTest {
             Test.assertEqual(firstComponent, uf.find(w));
             Test.assertEqual(firstComponent, uf.find(z));
         }
+
+        Test.assertEqual(uf.count(), 2);
+
+        uf.union(0, 1);
+
+        Test.assertEqual(uf.count(), 1);
     }
 }
