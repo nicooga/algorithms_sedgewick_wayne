@@ -1,8 +1,8 @@
-package algsex.misc;
+package algsex.support.union_find;
 
 import edu.princeton.cs.algs4.StdIn;
 import edu.princeton.cs.algs4.StdOut;
-import algsex.misc.UnionFind;
+import algsex.support.union_find.*;
 
 public class UnionFindViaQuickUnion implements UnionFind {
     private int[] id;

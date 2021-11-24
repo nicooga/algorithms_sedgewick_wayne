@@ -8,7 +8,7 @@ import edu.princeton.cs.algs4.StdRandom;
 import algsex.chapter1.section5.Exercise17.ErdosRenyi;
 
 import algsex.support.*;
-import algsex.misc.*;
+import algsex.support.union_find.*;
 import algsex.support.doubling_ratio_testing.*;
 
 // 1.5.22 Doubling test for Erdös-Renyi model. Develop a performance-testing client that

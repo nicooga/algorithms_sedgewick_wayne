@@ -2,9 +2,9 @@ package algsex.chapter1.section5;
 
 import java.util.*;
 import edu.princeton.cs.algs4.*;
-import algsex.misc.UnionFind;
 import algsex.support.InstrumentedArray;
 import algsex.support.Test;
+import algsex.support.union_find.*;
 
 // 1.5.4 Show the contents of the sz[] and id[] arrays and the number of array accesses
 // for each input pair corresponding to the weighted quick-union examples in the text

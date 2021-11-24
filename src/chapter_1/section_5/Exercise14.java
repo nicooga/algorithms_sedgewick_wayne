@@ -2,8 +2,7 @@ package algsex.chapter1.section5;
 
 import java.util.*;
 import edu.princeton.cs.algs4.*;
-import algsex.misc.UnionFind;
-import algsex.misc.UnionFindTest;
+import algsex.support.union_find.*;
 
 // 1.5.14 Weighted quick-union by height. Develop a UF implementation that uses the
 // same basic strategy as weighted quick-union but keeps track of tree height and always

@@ -1,9 +1,9 @@
-package algsex.misc;
+package algsex.support.union_find;
 
 import edu.princeton.cs.algs4.StdOut;
 import edu.princeton.cs.algs4.StdRandom;
 import algsex.support.Test;
-import algsex.misc.UnionFind;
+import algsex.support.union_find.*;
 
 public class UnionFindTest {
     private static final int SITES = 8;

@@ -1,4 +1,4 @@
-package algsex.misc;
+package algsex.support.union_find;
 
 public interface UnionFind {
     void union(int p, int q);

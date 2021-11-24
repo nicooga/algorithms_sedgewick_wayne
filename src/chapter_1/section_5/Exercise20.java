@@ -2,8 +2,7 @@ package algsex.chapter1.section5;
 
 import java.util.ArrayList;
 import edu.princeton.cs.algs4.*;
-import algsex.misc.UnionFind;
-import algsex.misc.UnionFindTest;
+import algsex.support.union_find.*;
 import algsex.support.Test;
 
 // 1.5.20 Dynamic growth. Using linked lists or a resizing array, develop a weighted

@@ -2,7 +2,7 @@ package algsex.chapter1.section5;
 
 import java.util.*;
 import edu.princeton.cs.algs4.*;
-import algsex.misc.*;
+import algsex.support.union_find.*;
 import algsex.support.doubling_ratio_testing.*;
 import algsex.chapter1.section5.Exercise13.UnionFindViaWeightedQuickUnionWithPathCompression;
 import algsex.chapter1.section5.Exercise22.UnionFindFactory;

@@ -2,10 +2,8 @@ package algsex.chapter1.section5;
 
 import java.util.*;
 import edu.princeton.cs.algs4.*;
-import algsex.misc.UnionFind;
-import algsex.misc.UnionFindTest;
-import algsex.misc.UnionFindViaQuickFind;
 import algsex.support.DoublingRatioTest;
+import algsex.support.union_find.*;
 
 // 1.5.11 Implement weighted quick-find, where you always change the id[] entries of
 // the smaller component to the identifier of the larger component. How does this change

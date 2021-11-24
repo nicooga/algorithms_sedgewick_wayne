@@ -1,7 +1,7 @@
 package algsex.chapter1.section5;
 
 import edu.princeton.cs.algs4.*;
-import algsex.misc.UnionFindTest;
+import algsex.support.union_find.*;
 import algsex.chapter1.section5.Exercise12;
 import algsex.chapter1.section5.Exercise12.InstrumentedUnionFind;
 

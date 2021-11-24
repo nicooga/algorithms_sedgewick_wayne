@@ -2,7 +2,7 @@ package algsex.chapter1.section5;
 
 import edu.princeton.cs.algs4.*;
 import algsex.support.Test;
-import algsex.misc.UnionFind;
+import algsex.support.union_find.*;
 
 // 1.5.8 Give a counterexample that shows why this intuitive implementation of union()
 // for quick-find is not correct:

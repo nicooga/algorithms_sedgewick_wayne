@@ -4,7 +4,7 @@ import java.util.*;
 import edu.princeton.cs.algs4.*;
 import algsex.support.InstrumentedArray;
 import algsex.support.Plot;
-import algsex.misc.UnionFind;
+import algsex.support.union_find.*;
 
 // 1.5.16 Amortized costs plots. Instrument your implementations from Exercise 1.5.7
 // to make amortized costs plots like those in the text.

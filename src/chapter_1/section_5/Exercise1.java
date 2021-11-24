@@ -3,7 +3,7 @@ package algsex.chapter1.section5;
 import java.util.*;
 import edu.princeton.cs.algs4.*;
 import algsex.support.InstrumentedArray;
-import algsex.misc.UnionFind;
+import algsex.support.union_find.*;
 
 // 1.5.1 Show the contents of the id[] array and the number of times the ar-
 // ray is accessed for each input pair when you use quick-find for the sequence

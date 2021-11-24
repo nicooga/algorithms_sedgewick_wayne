@@ -1,8 +1,7 @@
 package algsex.chapter1.section5;
 
 import edu.princeton.cs.algs4.*;
-import algsex.misc.UnionFind;
-import algsex.misc.UnionFindViaWeightedQuickUnion;
+import algsex.support.union_find.*;
 
 // 1.5.17 Random connections. Develop a UF client ErdosRenyi that takes an integer
 // value N from the command line, generates random pairs of integers between 0 and N-1,

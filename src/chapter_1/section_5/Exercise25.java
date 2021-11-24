@@ -5,7 +5,7 @@ import edu.princeton.cs.algs4.*;
 
 import algsex.support.*;
 import algsex.support.doubling_ratio_testing.*;
-import algsex.misc.*;
+import algsex.support.union_find.*;
 import algsex.chapter1.section5.Exercise22;
 import algsex.chapter1.section5.Exercise22.UnionFindFactory;
 import algsex.chapter1.section5.Exercise23.Connection;

@@ -2,9 +2,7 @@ package algsex.chapter1.section5;
 
 import java.util.*;
 import edu.princeton.cs.algs4.*;
-import algsex.misc.UnionFindViaQuickFind;
-import algsex.misc.UnionFindViaQuickUnion;
-import algsex.misc.UnionFindTest;
+import algsex.support.union_find.*;
 
 // 1.5.7 Develop classes QuickUnionUF and QuickFindUF that implement quick-union
 // and quick-find, respectively.

@@ -3,8 +3,7 @@ package algsex.chapter1.section5;
 import java.util.Arrays;
 import edu.princeton.cs.algs4.*;
 import algsex.support.Test;
-import algsex.misc.UnionFind;
-import algsex.misc.UnionFindTest;
+import algsex.support.union_find.*;
 
 // 1.5.12 Quick-union with path compression. Modify quick-union (page 224) to in-
 // clude path compression, by adding a loop to find() that links every site on the path
