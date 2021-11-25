@@ -1,5 +1,6 @@
 package algsex.support;
 
+import java.util.concurrent.Callable;
 import java.util.Arrays;
 import java.lang.reflect.*;
 import java.io.ByteArrayInputStream;
@@ -100,5 +101,22 @@ public class Test {
 
     public static String[] emptyArgs() {
         return EMPTY_ARGS;
+    }
+
+    public static void assertRaises(Class exceptionClass, Runnable fn) {
+        try {
+            fn.run();
+        } catch(Exception e) {
+            assert exceptionClass.isInstance(e)
+                : String.format(
+                    "Expected %s to be raised, to %s instead",
+                    exceptionClass,
+                    e.getClass()
+                );
+
+            return;
+        }
+
+        assert false : String.format("Expected %s to be raised", exceptionClass);
     }
 }
