@@ -5,13 +5,17 @@ import edu.princeton.cs.algs4.Stack;
 import edu.princeton.cs.algs4.StdOut;
 
 public class Exercise51 {
-  public static void main(String[] args) throws Evaluator.SyntaxError {
+  public static void main(String[] args) {
     Evaluator evaluator = new Evaluator();
 
-    assert evaluator.evaluate("1 + 2 * 3 - 2 * 3 * 2 + 3 * (2 + 2 - 1 * (2 - 1))") == 4;
-    assert evaluator.evaluate("1 + 2 + 3 * 4 - 5 * (6 + 7)") == -50;
-    assert evaluator.evaluate("10 + 2") == 12;
-    assert evaluator.evaluate("(10 + 9 * (32 - 31)) / 2") == 9.5;
+    try {
+      assert evaluator.evaluate("1 + 2 * 3 - 2 * 3 * 2 + 3 * (2 + 2 - 1 * (2 - 1))") == 4;
+      assert evaluator.evaluate("1 + 2 + 3 * 4 - 5 * (6 + 7)") == -50;
+      assert evaluator.evaluate("10 + 2") == 12;
+      assert evaluator.evaluate("(10 + 9 * (32 - 31)) / 2") == 9.5;
+    } catch(Evaluator.SyntaxError e) {
+      assert false : e;
+    }
 
     StdOut.println("Tests passed");
   }
