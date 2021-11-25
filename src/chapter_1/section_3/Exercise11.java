@@ -6,12 +6,16 @@ import edu.princeton.cs.algs4.*;
 // input, evaluates it, and prints the value. (Piping the output of your program from
 // the previous exercise to this program gives equivalent behavior to Evaluate.)
 public class Exercise11 {
-  public static void main(String[] args) throws PostfixExpressionEvaluator.SyntaxError {
-    PostfixExpressionEvaluator evaluator = new PostfixExpressionEvaluator();
-
-    assert evaluator.evaluate("120 80 + 2 5 * + 10 -") == 200;
-    assert evaluator.evaluate("2 3 *") == 6;
-    assert evaluator.evaluate("2 5 /") == 0;
+  public static void main(String[] args) {
+    try {
+      PostfixExpressionEvaluator evaluator = new PostfixExpressionEvaluator();
+  
+      assert evaluator.evaluate("120 80 + 2 5 * + 10 -") == 200;
+      assert evaluator.evaluate("2 3 *") == 6;
+      assert evaluator.evaluate("2 5 /") == 0;
+    } catch (PostfixExpressionEvaluator.SyntaxError e) {
+      assert false : e;
+    }
 
     StdOut.println("Tests passed");
   }
