@@ -59,6 +59,8 @@ public class Stack<T> {
         return s.toString();
     }
 
+    public T peek() { return first.item; }
+
     private class Node {
         T item;
         Node next;
