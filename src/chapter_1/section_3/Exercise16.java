@@ -3,6 +3,7 @@ package algsex.chapter1.section3;
 import java.util.Iterator;
 import java.util.Arrays;
 import edu.princeton.cs.algs4.*;
+import algsex.support.Test;
 
 // 1.3.16 Using readInts() on page 126 as a model, write a static method readDates() for
 // Date that reads dates from standard input in the format specified in the table on page 119
@@ -14,7 +15,14 @@ public class Exercise16 {
     StdOut.println(Arrays.toString(dates));
   }
 
-  public static Date[] readDates() {
+  public static void test() {
+    Test.simulateInput("5/22/1939\n5/23/1923");
+    Date[] dates = readDates();
+    Test.assertTrue(dates[0].equals(new Date(5, 22, 1939)));
+    Test.assertTrue(dates[1].equals(new Date(5, 23, 1923)));
+  }
+
+  private static Date[] readDates() {
     Queue<Date> queue = new Queue<>();
 
     while(!StdIn.isEmpty()) {
@@ -32,7 +40,7 @@ public class Exercise16 {
     return array;
   }
 
-  public static Date parseDate(String str) {
+  private static Date parseDate(String str) {
     String[] fields = str.split("/");
 
     int month = Integer.parseInt(fields[0]);
