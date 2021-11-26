@@ -30,7 +30,5 @@ public class MainTest {
         Exercise30.main(Test.emptyArgs());
         Exercise31.main(Test.emptyArgs());
         Exercise34.main(Test.emptyArgs());
-        Exercise38.main(Test.emptyArgs());
-        Exercise39.main(Test.emptyArgs());
     }
 }
