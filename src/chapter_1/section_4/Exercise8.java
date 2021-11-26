@@ -2,6 +2,7 @@ package algsex.chapter1.section4;
 
 import java.util.Arrays;
 import edu.princeton.cs.algs4.*;
+import algsex.support.Test;
 
 // 1.4.8 Write a program to determine the number pairs of values in an input file that
 // are equal. If your first try is quadratic, think again and use Arrays.sort() to develop
@@ -25,9 +26,8 @@ public class Exercise8 {
   }
 
   private static void runTests() {
-    assert CountEqualPairs.count(new String[] { "asdf", "asdf", "qwer" }) == 1;
-    assert CountEqualPairs.count(new String[] { "qwer", "qwer", "qwer" }) == 3;
-    StdOut.println("Tests passed");
+    Test.assertEqual(CountEqualPairs.count(new String[] { "asdf", "asdf", "qwer" }), 2);
+    Test.assertEqual(CountEqualPairs.count(new String[] { "qwer", "qwer", "qwer" }), 3);
   }
 
   private static class CountEqualPairs {
@@ -37,11 +37,9 @@ public class Exercise8 {
 
       Arrays.sort(a);
 
-      for (int i = 1; i < a.length; i++) {
-        String line = a[i];
-
-        if (line.equals(tempLine)) count++;
-        else tempLine = line;
+      for (int i = 0; i < a.length; i++) {
+        if (i < a.length-1 && a[i] == a[i+1]) count++;
+        else if (i > 0 && a[i] == a[i-1]) count++;
       }
 
       return count;
