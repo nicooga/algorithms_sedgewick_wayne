@@ -11,10 +11,11 @@ import algsex.support.Test;
 // identifier.
 public class Exercise20 {
     public static void main(String[] args) {
-        for (int i = 2; i < 1000; i++)
-            UnionFindTest.runTest(new UnionFindViaWeightedQuickUnion(), i);
-
         UnionFindViaWeightedQuickUnion uf = new UnionFindViaWeightedQuickUnion();
+        for (int i = 0; i < 8; i++) uf.newSite();
+        UnionFindTest.runTest(uf);
+
+        uf = new UnionFindViaWeightedQuickUnion();
 
         Test.assertEqual(uf.newSite(), 0);
         Test.assertEqual(uf.count(), 1);
@@ -28,13 +29,7 @@ public class Exercise20 {
         uf.union(0, 9);
         Test.assertEqual(uf.count(), 9);
 
-        StdOut.println("N: " + uf.N);
-        StdOut.println("count: " + uf.count());
-        StdOut.println("id: "  + uf.id);
-
         Test.assertEqual(uf.newSite(), 10);
-
-        StdOut.println("Tests passed");
     }
 
     private static class UnionFindViaWeightedQuickUnion implements UnionFind {
