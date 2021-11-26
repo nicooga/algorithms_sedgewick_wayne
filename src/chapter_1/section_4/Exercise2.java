@@ -13,18 +13,10 @@ public class Exercise2 {
     assert ThreeSum.count(new int[] { 1, 2, 3 }) == 0;
 
     assert ThreeSum.count(new int[] {
-      Integer.MAX_VALUE, // 2^32 - 1
-      -1,                // 2^32 - 1 - 1 = 2^32 - 2
-      Integer.MIN_VALUE  // 2^32 - 2 - 2^32 = -2
-    }) == 0;
-
-    assert ThreeSum.count(new int[] {
       Integer.MIN_VALUE,
-      1,
-      Integer.MAX_VALUE
+      Integer.MIN_VALUE,
+      0,
     }) == 0;
-
-    StdOut.println("Tests passed");
   }
 
   private static class ThreeSum {
