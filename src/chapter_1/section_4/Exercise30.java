@@ -10,11 +10,15 @@ import algsex.support.Steque;
 // (see Exercise 1.3.32) so that each deque operation takes a constant amortized number
 // of stack and steque operations.
 public class Exercise30 {
-    public static void main(String[] args) throws EmptyDequeError {
-        Deque<Integer> d = buildTestDeque();
-        for (int i = 1; i <= 12; i++) Test.assertEqual((int) d.popLeft(), i);
-        d = buildTestDeque();
-        for (int i = 12; i >= 1; i--) Test.assertEqual((int) d.popRight(), i);
+    public static void main(String[] args) {
+        try {
+            Deque<Integer> d = buildTestDeque();
+            for (int i = 1; i <= 12; i++) Test.assertEqual((int) d.popLeft(), i);
+            d = buildTestDeque();
+            for (int i = 12; i >= 1; i--) Test.assertEqual((int) d.popRight(), i);
+        } catch (EmptyDequeError e) {
+            assert false : e;
+        }
         StdOut.println("Tests passed");
     }
 

@@ -7,19 +7,23 @@ import algsex.support.Stack;
 // 1.4.31 deque with three stacks. implement a deque with three stacks so that each
 // deque operation takes a constant amortized number of stack operations.
 public class Exercise31 {
-    public static void main(String[] args) throws EmptyDequeError {
-        Deque<Integer> d = buildTestDeque();
+    public static void main(String[] args) {
+        try {
+            Deque<Integer> d = buildTestDeque();
 
-        for (int i = 1; i <= 12; i++) {
-            Test.assertEqual((int) d.size(), 13-i);
-            Test.assertEqual((int) d.popLeft(), i);
-        }
+            for (int i = 1; i <= 12; i++) {
+                Test.assertEqual((int) d.size(), 13-i);
+                Test.assertEqual((int) d.popLeft(), i);
+            }
 
-        d = buildTestDeque();
+            d = buildTestDeque();
 
-        for (int i = 12; i >= 1; i--) {
-            Test.assertEqual((int) d.size(), i);
-            Test.assertEqual((int) d.popRight(), i);
+            for (int i = 12; i >= 1; i--) {
+                Test.assertEqual((int) d.size(), i);
+                Test.assertEqual((int) d.popRight(), i);
+            }
+        } catch (EmptyDequeError e) {
+            assert false : e;
         }
 
         StdOut.println("Tests passed");
