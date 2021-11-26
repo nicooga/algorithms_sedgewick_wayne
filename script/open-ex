@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+main() {
+    chapter=$1
+    section=$2
+    exercise=$3
+
+    $EDITOR $PROJECT_ROOT/src/chapter_$chapter/section_$section/Exercise$exercise.java
+}
+
+main $@
