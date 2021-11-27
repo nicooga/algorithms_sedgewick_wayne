@@ -24,7 +24,7 @@ public class UnionFindTest {
         StdOut.println("Union-find tests passed for " + uf.getClass());
     }
 
-    public static void runTest(UnionFind uf, int sites) {
+    private static void runTest(UnionFind uf, int sites) {
         Test.assertEqual(uf.count(), sites);
 
         for (int i = 0; i < SITES*3; i++) {
